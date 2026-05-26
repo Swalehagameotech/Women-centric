@@ -18,3 +18,104 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+.promo-strip {
+  background: #f5a623;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 9px 0;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+}
+
+.promo-strip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    110deg,
+    transparent 0px,
+    transparent 18px,
+    rgba(160, 75, 0, 0.22) 18px,
+    rgba(160, 75, 0, 0.22) 30px
+  );
+  animation: stripes-move 25s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes stripes-move {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-25%);
+  }
+}
+
+.ticker-track {
+  display: inline-flex;
+  position: relative;
+  z-index: 1;
+  animation: ticker-move 20s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-move {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-group {
+  display: inline-flex;
+}
+
+.ticker-item {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  padding-right: 28px;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+.ticker-item .sep {
+  color: #7b3f00;
+  margin: 0 8px;
+  font-weight: 900;
+}
+
+.strip-arrow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: #d4890a;
+  border: none;
+  padding: 0 16px;
+  cursor: pointer;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.strip-arrow svg {
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2.5;
+  width: 16px;
+  height: 16px;
+}

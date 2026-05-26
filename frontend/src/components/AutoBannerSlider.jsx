@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
 
-const topPromoBanner =
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779547034/Untitled_1920_x_600_px_1920_x_650_px_1920_x_100_px_1920_x_50_px_hann6x.png';
-
 const sliderImages = [
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779544471/6_wnahva.png',
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779544472/2_ibuziz.png',
@@ -31,17 +28,9 @@ function AutoBannerSlider() {
   }, []);
 
   return (
-    <section className="relative z-0 pt-2 sm:pt-3">
+    <section className="relative z-0 pt-0">
       <div className="w-full">
-        <div className="overflow-hidden bg-white shadow-sm">
-          <img
-            src={topPromoBanner}
-            alt="Women's collection banner"
-            className="block h-auto w-full object-cover"
-          />
-        </div>
-
-        <div className="mt-5 px-4 sm:mt-6 sm:px-6 md:px-8">
+        <div className="px-4 sm:px-6 md:px-8">
           <div className="relative mx-auto max-w-[1600px] overflow-hidden bg-white shadow-sm">
             <div
               className="flex transition-transform duration-700 ease-in-out"

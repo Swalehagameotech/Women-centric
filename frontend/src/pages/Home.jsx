@@ -1,7 +1,14 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AutoBannerSlider from '../components/AutoBannerSlider';
+import BestsellerCategoriesSection from '../components/BestsellerCategoriesSection';
+import DiscountDealsSection from '../components/DiscountDealsSection';
 import ExploreEleganceSection from '../components/ExploreEleganceSection';
 import NewLaunchSection from '../components/NewLaunchSection';
+
+const heroPromoMessage = '50% off on Luxury Bags grab the opportunity';
+const heroPromoVideo =
+  'https://res.cloudinary.com/dsafvwkrf/video/upload/v1779802589/Firefly_Luxury_fashion_ad_cinematic_aesthetic._Scene_1-_elegant_Indian_woman_walking_in_pastel_sare_1_n1pebp.mp4';
 
 const categories = [
   {
@@ -21,137 +28,244 @@ const categories = [
   },
 ];
 
-const highlights = [
-  'Handpicked collections for every season',
-  'Inclusive sizing and thoughtful fits',
-  'Secure checkout and fast delivery',
-  'Dedicated support for women, by women',
+const promiseItems = [
+  { title: 'Curated Collections', icon: 'sparkles' },
+  { title: 'Inclusive Sizing', icon: 'size' },
+  { title: 'Secure Checkout', icon: 'shield' },
+  { title: '100+ Happy Clients', icon: 'users' },
+  { title: 'Easy Returns', icon: 'refresh' },
+  { title: 'Personal Styling', icon: 'heart' },
+  { title: 'Quality Checked', icon: 'badge' },
+  { title: 'Transparent Prices', icon: 'eye' },
+  { title: 'Women-First Support', icon: 'sparkles' },
 ];
 
+function PromiseIcon({ type }) {
+  const commonProps = {
+    className: 'h-5 w-5',
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: '1.8',
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+  };
+
+  if (type === 'sparkles') {
+    return (
+      <svg {...commonProps}>
+        <path d="m12 3 1.1 3.4L16.5 7l-3.4 1.1L12 11.5l-1.1-3.4L7.5 7l3.4-1.1L12 3Z" />
+        <path d="m18.5 13 0.7 2.1 2.1 0.7-2.1 0.7-0.7 2.1-0.7-2.1-2.1-0.7 2.1-0.7 0.7-2.1Z" />
+        <path d="m5.5 14 0.8 2.2 2.2 0.8-2.2 0.8-0.8 2.2-0.8-2.2-2.2-0.8 2.2-0.8 0.8-2.2Z" />
+      </svg>
+    );
+  }
+
+  if (type === 'size') {
+    return (
+      <svg {...commonProps}>
+        <path d="M4 7h16" />
+        <path d="M4 17h16" />
+        <path d="M7 4v16" />
+        <path d="M17 4v16" />
+      </svg>
+    );
+  }
+
+  if (type === 'shield') {
+    return (
+      <svg {...commonProps}>
+        <path d="M12 3 5 6v5c0 5 3.4 8.7 7 10 3.6-1.3 7-5 7-10V6l-7-3Z" />
+        <path d="m9.5 12 1.6 1.6 3.4-3.6" />
+      </svg>
+    );
+  }
+
+  if (type === 'truck') {
+    return (
+      <svg {...commonProps}>
+        <path d="M3 7h11v8H3Z" />
+        <path d="M14 10h3l3 3v2h-6Z" />
+        <circle cx="8" cy="18" r="2" />
+        <circle cx="18" cy="18" r="2" />
+      </svg>
+    );
+  }
+
+  if (type === 'refresh') {
+    return (
+      <svg {...commonProps}>
+        <path d="M20 6v6h-6" />
+        <path d="M4 18v-6h6" />
+        <path d="M7 17a7 7 0 0 0 11-3" />
+        <path d="M17 7A7 7 0 0 0 6 10" />
+      </svg>
+    );
+  }
+
+  if (type === 'heart') {
+    return (
+      <svg {...commonProps}>
+        <path d="m12 20-1.2-1.1C5.2 13.9 2 11 2 7.5 2 5 4 3 6.5 3c1.7 0 3.4.8 4.5 2.1C12.1 3.8 13.8 3 15.5 3 18 3 20 5 20 7.5c0 3.5-3.2 6.4-8.8 11.4Z" />
+      </svg>
+    );
+  }
+
+  if (type === 'badge') {
+    return (
+      <svg {...commonProps}>
+        <circle cx="12" cy="9" r="4" />
+        <path d="m9 13-1 8 4-2 4 2-1-8" />
+      </svg>
+    );
+  }
+
+  if (type === 'eye') {
+    return (
+      <svg {...commonProps}>
+        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg {...commonProps}>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="10" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
 function Home() {
+  const promiseSectionRef = useRef(null);
+  const [showPromiseSection, setShowPromiseSection] = useState(false);
+
+  useEffect(() => {
+    const section = promiseSectionRef.current;
+
+    if (!section) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowPromiseSection(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div>
-      <AutoBannerSlider />
-      <ExploreEleganceSection />
-      <NewLaunchSection />
-
-      <section className="relative overflow-hidden bg-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-rose-600">
-              Women-centric shopping
-            </p>
-            <h1 className="mt-4 font-serif text-4xl leading-tight text-rose-950 sm:text-5xl">
-              Celebrate your style, every single day
-            </h1>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-stone-600">
-              Discover fashion, beauty, and lifestyle products crafted with women in mind — quality
-              you can trust, designs you will love.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
-              <Link
-                to="/about"
-                className="rounded-full bg-rose-700 px-6 py-3 text-sm font-medium text-white shadow-md transition hover:bg-rose-800"
-              >
-                Explore our story
-              </Link>
-              <Link
-                to="/contact"
-                className="rounded-full border border-rose-200 bg-white px-6 py-3 text-sm font-medium text-rose-800 transition hover:border-rose-300"
-              >
-                Get in touch
-              </Link>
-            </div>
+      <section className="pt-2 sm:pt-3">
+        <div className="w-full">
+          <div className="promo-strip text-center">
+            <p className="relative z-10 text-sm font-bold tracking-[0.2px] text-white">{heroPromoMessage}</p>
           </div>
 
-          <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-            <div className="aspect-[4/5] rounded-3xl bg-gradient-to-tl from-rose-200 via-rose-50 to-amber-100 p-8 shadow-xl">
-              <div className="flex h-full flex-col justify-between rounded-2xl border border-white/60 bg-white/40 p-6 backdrop-blur-sm">
-                <p className="font-serif text-2xl text-rose-900">New arrivals</p>
-                <ul className="space-y-3 text-sm text-stone-700">
-                  <li className="flex justify-between border-b border-rose-100 pb-2">
-                    <span>Silk evening dress</span>
-                    <span className="font-medium text-rose-700">₹2,499</span>
-                  </li>
-                  <li className="flex justify-between border-b border-rose-100 pb-2">
-                    <span>Rose glow serum</span>
-                    <span className="font-medium text-rose-700">₹899</span>
-                  </li>
-                  <li className="flex justify-between">
-                    <span>Pearl drop earrings</span>
-                    <span className="font-medium text-rose-700">₹649</span>
-                  </li>
-                </ul>
-                <p className="text-xs text-stone-500">Free shipping on orders above ₹999</p>
+          <div className="mt-5 overflow-hidden">
+            <video
+              className="block h-[300px] w-full object-cover sm:h-[420px] lg:h-[520px]"
+              src={heroPromoVideo}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          </div>
+        </div>
+      </section>
+
+      <ExploreEleganceSection />
+      <AutoBannerSlider />
+      <NewLaunchSection />
+      <BestsellerCategoriesSection />
+      <DiscountDealsSection />
+
+
+
+      <section ref={promiseSectionRef} className="bg-white">
+        <div
+          className={`mx-auto max-w-7xl px-4 py-16 transition-all duration-700 ease-out sm:px-6 lg:py-20 ${
+            showPromiseSection ? 'translate-x-0 opacity-100' : 'translate-x-24 opacity-0'
+          }`}
+        >
+          <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
+            <div className="lg:pr-4">
+              <div className="hidden items-center gap-5 lg:flex">
+                <h2 className="font-serif text-5xl leading-[0.95] text-rose-950 xl:text-6xl">
+                  Why Women
+                  <br />
+                  Choose Lumiere
+                </h2>
+                <span className="h-px flex-1 bg-rose-200" />
+              </div>
+
+              <div className="lg:hidden">
+                <h2 className="font-serif text-3xl text-rose-950 sm:text-4xl">Why Women Choose Lumiere</h2>
+              </div>
+
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-stone-600">
+                We believe shopping should feel personal, empowering, and effortless. From product
+                selection to customer care, every detail is built around you.
+              </p>
+            </div>
+
+            <div className="rounded-[28px] border border-rose-200 bg-white px-4 py-5 shadow-[0_12px_36px_rgba(109,53,65,0.08)] sm:px-6 sm:py-6">
+              <div className="grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-3">
+                {promiseItems.map((item) => (
+                  <div key={item.title} className="flex flex-col items-center text-center">
+                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-900 text-white">
+                      <PromiseIcon type={item.icon} />
+                    </span>
+                    <p className="mt-3 text-sm font-medium leading-6 text-stone-700 sm:text-base">
+                      {item.title}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <div className="text-center">
-          <h2 className="font-serif text-3xl text-rose-950">Shop by category</h2>
-          <p className="mx-auto mt-3 max-w-xl text-stone-600">
-            Everything you need in one place — thoughtfully curated for women who value quality
-            and comfort.
-          </p>
-        </div>
-
-        <div className="mt-10 grid gap-6 sm:grid-cols-3">
-          {categories.map((item) => (
-            <article
-              key={item.title}
-              className="rounded-2xl border border-rose-100 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-            >
-              <span className="text-3xl" role="img" aria-hidden="true">
-                {item.emoji}
-              </span>
-              <h3 className="mt-4 text-lg font-semibold text-rose-900">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-stone-600">{item.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <div>
-              <h2 className="font-serif text-3xl text-rose-950">Why women choose Lumière</h2>
-              <p className="mt-4 text-stone-600">
-                We believe shopping should feel personal, empowering, and effortless. From product
-                selection to customer care, every detail is built around you.
-              </p>
-            </div>
-            <ul className="grid gap-3 sm:grid-cols-2">
-              {highlights.map((point) => (
-                <li
-                  key={point}
-                  className="flex items-start gap-3 rounded-xl bg-rose-50/80 px-4 py-3 text-sm text-stone-700"
-                >
-                  <span className="mt-0.5 text-rose-600">♥</span>
-                  {point}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-6xl px-4 pb-20 pt-4 sm:px-6">
-        <div className="rounded-3xl border border-stone-200 bg-white px-6 py-12 text-center shadow-sm sm:px-12">
-          <h2 className="font-serif text-2xl text-rose-950 sm:text-3xl">Ready to refresh your wardrobe?</h2>
-          <p className="mx-auto mt-3 max-w-lg text-stone-600">
-            Join thousands of women who shop with confidence. Have questions? Our team is here to
-            help.
-          </p>
-          <Link
-            to="/contact"
-            className="mt-6 inline-block rounded-full bg-white px-6 py-3 text-sm font-medium text-rose-800 transition hover:bg-rose-50"
-          >
-            Contact us today
-          </Link>
+        <div className="relative overflow-hidden">
+          <video
+            className="h-[340px] w-full object-cover sm:h-[420px]"
+            src="https://res.cloudinary.com/dsafvwkrf/video/upload/v1779798972/PixVerse_V6_Image_Text_360P_genrate__video_of__ieffsg.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="absolute inset-0 bg-black/40" />
+
+          <div className="absolute inset-0 flex items-center justify-center px-6 text-center sm:px-12">
+            <div>
+              <h2 className="font-serif text-2xl text-white sm:text-3xl">Ready to refresh your wardrobe?</h2>
+              <p className="mx-auto mt-3 max-w-lg text-white/90">
+                Join thousands of women who shop with confidence. Have questions? Our team is here to
+                help.
+              </p>
+              <Link
+                to="/contact"
+                className="mt-6 inline-block rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
+              >
+                Contact us today
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
     </div>

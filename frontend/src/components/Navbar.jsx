@@ -58,11 +58,12 @@ function Navbar() {
   return (
     <header id="site-header" className="sticky top-0 z-50 border-b border-stone-200 bg-white shadow-sm">
       <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className="shrink-0 font-serif text-lg font-semibold tracking-tight text-rose-900 sm:text-xl">
-          Lumière
-          <span className="block text-[9px] font-sans font-normal uppercase tracking-[0.18em] text-rose-500">
-            Women&apos;s Collection
-          </span>
+        <Link to="/" className="shrink-0">
+          <img
+            src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1779804137/S_ydzhsq.png"
+            alt="Lumiere logo"
+            className="h-10 w-40 sm:h-12"
+          />
         </Link>
 
         <div className="hidden max-w-md flex-1 items-center gap-2 rounded-lg border border-stone-200 bg-white px-4 py-2 text-stone-500 md:flex">
