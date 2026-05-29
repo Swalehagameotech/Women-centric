@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
+import MobileSideDrawer from './MobileSideDrawer';
 
 function SearchIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2">
       <circle cx="11" cy="11" r="7" />
       <path d="m20 20-3.5-3.5" />
     </svg>
@@ -20,7 +24,7 @@ function HeartIcon() {
 
 function BasketIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M5 10h14l-1.5 9h-11Z" />
       <path d="M9 10a3 3 0 1 1 6 0" />
     </svg>
@@ -37,9 +41,59 @@ function MoreIcon() {
   );
 }
 
-function Navbar() {
+function Navbar({ categories = [] }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
+  const { user, loggedIn, openAuth, signOut, requireAuth } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (location.pathname === '/search') {
+      const params = new URLSearchParams(location.search);
+      setSearchQuery(params.get('q') || '');
+    }
+  }, [location.pathname, location.search]);
+
+  const submitSearch = (event) => {
+    event.preventDefault();
+    const trimmed = searchQuery.trim();
+
+    if (!trimmed) {
+      return;
+    }
+
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
+
+  useLayoutEffect(() => {
+    if (!menuOpen || !menuRef.current) {
+      setMenuPosition(null);
+      return;
+    }
+
+    const updatePosition = () => {
+      const rect = menuRef.current.getBoundingClientRect();
+      setMenuPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -55,88 +109,188 @@ function Navbar() {
     };
   }, []);
 
+  const goToProtected = (path) => {
+    setMenuOpen(false);
+    requireAuth(() => navigate(path));
+  };
+
   return (
-    <header id="site-header" className="sticky top-0 z-50 border-b border-stone-200 bg-white shadow-sm">
-      <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6">
-        <Link to="/" className="shrink-0">
-          <img
-            src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1779804137/S_ydzhsq.png"
-            alt="Lumiere logo"
-            className="h-10 w-40 sm:h-12"
-          />
-        </Link>
+    <>
+      <header
+        id="site-header"
+        className="fixed top-0 left-0 right-0 z-[100] w-full overflow-visible border-b border-black/10 bg-header shadow-sm"
+      >
+        <nav className="relative z-10 mx-auto flex min-h-[64px] w-full max-w-[1400px] items-center gap-2 px-3 py-2 sm:min-h-[72px] sm:gap-3 sm:px-6 sm:py-2.5">
+          <Link to="/" className="shrink-0">
+            <img
+              src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1780062681/S_5_cnc086.png"
+              alt="Style By Her logo"
+              className="h-10 w-auto max-w-[120px] object-contain sm:h-14 sm:max-w-[200px] md:h-16 md:max-w-[240px]"
+            />
+          </Link>
 
-        <div className="hidden max-w-md flex-1 items-center gap-2 rounded-lg border border-stone-200 bg-white px-4 py-2 text-stone-500 md:flex">
-          <SearchIcon />
-          <input
-            type="text"
-            placeholder="What are you looking for?"
-            className="w-full border-0 bg-transparent text-sm text-stone-700 outline-none placeholder:text-stone-400"
-          />
-        </div>
-
-        <div className="ml-auto flex items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 text-stone-600 md:hidden"
-            aria-label="Search"
+          <form
+            onSubmit={submitSearch}
+            className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-black/15 bg-white px-3 py-2 md:hidden"
           >
-            <SearchIcon />
-          </button>
+            <span className="text-primary">
+              <SearchIcon />
+            </span>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search products..."
+              className="min-w-0 flex-1 border-0 bg-transparent text-sm text-black outline-none placeholder:text-black/40"
+            />
+          </form>
 
-          <button
-            type="button"
-            className="hidden min-w-[72px] flex-col items-center justify-center rounded-2xl px-3 py-1.5 text-xs font-medium text-stone-700 transition hover:bg-stone-100 sm:inline-flex"
+          <form
+            onSubmit={submitSearch}
+            className="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex"
           >
-            <HeartIcon />
-            <span>Favourite</span>
-          </button>
+            <div className="pointer-events-auto flex w-full max-w-md items-center gap-2 rounded-lg border border-black/15 bg-white px-4 py-2 text-black/50 shadow-sm lg:max-w-lg">
+              <span className="text-primary">
+                <SearchIcon />
+              </span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="What are you looking for?"
+                className="w-full border-0 bg-transparent text-sm text-black outline-none placeholder:text-black/40"
+              />
+            </div>
+          </form>
 
-          <button
-            type="button"
-            className="hidden min-w-[72px] flex-col items-center justify-center rounded-2xl px-3 py-1.5 text-xs font-medium text-stone-700 transition hover:bg-stone-100 sm:inline-flex"
-          >
-            <BasketIcon />
-            <span>Basket</span>
-          </button>
-
-          <button
-            type="button"
-            className="rounded-full bg-rose-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-800"
-          >
-            Sign In / Sign Out
-          </button>
-
-          <div ref={menuRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setMenuOpen((currentValue) => !currentValue)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 text-stone-700 transition hover:bg-stone-100"
-              aria-label="Open more options"
+          <div className="ml-auto hidden shrink-0 items-center gap-1.5 sm:gap-3 md:flex">
+            <Link
+              to="/favourites"
+              className="relative min-w-[64px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1.5 text-[11px] font-medium text-primary transition hover:bg-black/5 inline-flex"
             >
-              <MoreIcon />
-            </button>
+              <span className="relative inline-flex">
+                <HeartIcon />
+                {wishlistCount > 0 && (
+                  <span className="absolute -right-2.5 -top-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-white">
+                    {wishlistCount > 99 ? '99+' : wishlistCount}
+                  </span>
+                )}
+              </span>
+              <span>Favourite</span>
+            </Link>
 
-            {menuOpen && (
-              <div className="absolute right-0 top-full mt-2 w-44 rounded-2xl border border-stone-200 bg-white p-2 shadow-lg">
-                <button
-                  type="button"
-                  className="w-full rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100"
-                >
-                  Account Settings
-                </button>
-                <button
-                  type="button"
-                  className="w-full rounded-xl px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-stone-100"
-                >
-                  Orders
-                </button>
-              </div>
+            <Link
+              to="/basket"
+              className="relative min-w-[64px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1.5 text-[11px] font-medium text-primary transition hover:bg-black/5 inline-flex"
+            >
+              <span className="relative inline-flex">
+                <BasketIcon />
+                {cartCount > 0 && (
+                  <span className="absolute -right-2.5 -top-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-white">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </span>
+              <span>Basket</span>
+            </Link>
+
+            {loggedIn ? (
+              <button
+                type="button"
+                onClick={signOut}
+                className="rounded-lg border border-primary px-3.5 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/5"
+              >
+                {user?.name ? ` ${user.name.split(' ')[0]}` : ''}
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openAuth('login')}
+                className="rounded-full bg-primary px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-primary-dark"
+              >
+                Sign in
+              </button>
             )}
+
+            <div ref={menuRef} className="relative z-[150]">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((currentValue) => !currentValue)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-black/5"
+                aria-label="Open more options"
+              >
+                <MoreIcon />
+              </button>
+
+              {menuOpen && menuPosition && (
+                <div
+                  className="fixed z-[150] w-48 rounded-2xl border border-black/10 bg-white p-2 shadow-2xl"
+                  style={{ top: menuPosition.top, right: menuPosition.right }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => goToProtected('/account')}
+                    className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-black transition hover:bg-black/5"
+                  >
+                    Account Settings
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => goToProtected('/orders')}
+                    className="w-full rounded-xl px-3 py-2.5 text-left text-sm text-black transition hover:bg-black/5"
+                  >
+                    Orders
+                  </button>
+
+                  <div className="my-1 border-t border-black/10" />
+
+                  {loggedIn ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        signOut();
+                        setMenuOpen(false);
+                      }}
+                      className="w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-primary transition hover:bg-black/5"
+                    >
+                      Sign out
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        openAuth('login');
+                        setMenuOpen(false);
+                      }}
+                      className="w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-primary transition hover:bg-black/5"
+                    >
+                      Sign in
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </nav>
-    </header>
+
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-black/5 md:hidden"
+            aria-label="Open menu"
+          >
+            <MoreIcon />
+          </button>
+        </nav>
+      </header>
+
+      <MobileSideDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        categories={categories}
+      />
+
+      <div className="h-[var(--site-header-height)] shrink-0" aria-hidden="true" />
+    </>
   );
 }
 

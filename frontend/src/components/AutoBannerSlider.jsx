@@ -1,69 +1,33 @@
-import { useEffect, useState } from 'react';
+import BannerSliderTrack from './BannerSliderTrack';
 
-const sliderImages = [
+const desktopSliderImages = [
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779544471/6_wnahva.png',
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779544472/2_ibuziz.png',
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779544471/1_nvytlj.png',
 ];
 
+const mobileSliderImages = [
+  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780050813/ChatGPT_Image_May_29_2026_03_41_14_PM_ix8rmc.png',
+  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780050814/ChatGPT_Image_May_29_2026_04_02_44_PM_xgvcbq.png',
+  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780050813/ChatGPT_Image_May_29_2026_04_02_50_PM_xmbr1o.png',
+];
+
 function AutoBannerSlider() {
-  const [activeSlide, setActiveSlide] = useState(0);
-
-  const showPreviousSlide = () => {
-    setActiveSlide((currentSlide) =>
-      currentSlide === 0 ? sliderImages.length - 1 : currentSlide - 1,
-    );
-  };
-
-  const showNextSlide = () => {
-    setActiveSlide((currentSlide) => (currentSlide + 1) % sliderImages.length);
-  };
-
-  useEffect(() => {
-    const sliderTimer = window.setInterval(() => {
-      setActiveSlide((currentSlide) => (currentSlide + 1) % sliderImages.length);
-    }, 3500);
-
-    return () => window.clearInterval(sliderTimer);
-  }, []);
-
   return (
     <section className="relative z-0 pt-0">
-      <div className="w-full">
-        <div className="px-4 sm:px-6 md:px-8">
-          <div className="relative mx-auto max-w-[1600px] overflow-hidden bg-white shadow-sm">
-            <div
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{ transform: `translateX(-${activeSlide * 100}%)` }}
-            >
-              {sliderImages.map((image, index) => (
-                <img
-                  key={image}
-                  src={image}
-                  alt={`Women's collection slide ${index + 1}`}
-                  className="block w-full shrink-0 object-cover"
-                />
-              ))}
-            </div>
+      <div className="w-full px-4 sm:px-6 md:px-8">
+        <div className="md:hidden">
+          <BannerSliderTrack
+            images={mobileSliderImages}
+            imageClassName="block aspect-square w-full shrink-0 object-cover"
+          />
+        </div>
 
-            <button
-              type="button"
-              onClick={showPreviousSlide}
-              className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-stone-700 shadow-md transition hover:bg-white"
-              aria-label="Previous slide"
-            >
-              ‹
-            </button>
-
-            <button
-              type="button"
-              onClick={showNextSlide}
-              className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-2xl text-stone-700 shadow-md transition hover:bg-white"
-              aria-label="Next slide"
-            >
-              ›
-            </button>
-          </div>
+        <div className="hidden md:block">
+          <BannerSliderTrack
+            images={desktopSliderImages}
+            imageClassName="block w-full shrink-0 object-cover"
+          />
         </div>
       </div>
     </section>

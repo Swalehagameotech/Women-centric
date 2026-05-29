@@ -1,29 +1,60 @@
-const eleganceImages = [
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/Untitled_500_x_400_px_1_khw6uz.png',
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710948/2_mi01qx.png',
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/4_kzgtqj.png',
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/3_ycsbrj.png',
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/5_mtynxn.png',
+import { Link } from 'react-router-dom';
+
+const eleganceSlides = [
+  {
+    image:
+      'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/Untitled_500_x_400_px_1_khw6uz.png',
+    to: '/category/womens-wear',
+    label: 'Womens Wear',
+  },
+  {
+    image: 'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710948/2_mi01qx.png',
+    to: '/category/luxury-accessories',
+    label: 'Luxury Accessories',
+  },
+  {
+    image: 'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/4_kzgtqj.png',
+    to: '/category/bags',
+    label: 'Bags',
+  },
+  {
+    image: 'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/3_ycsbrj.png',
+    to: '/category/footwear',
+    label: 'Footwear',
+  },
+  {
+    image: 'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/5_mtynxn.png',
+    to: '/category/luxury-essentials',
+    label: 'Luxury Essentials',
+  },
 ];
 
 const featureItems = [
   {
     title: 'Premium Quality',
+    shortLabel: 'Premium',
+    mobileHint: 'Handpicked',
     description: 'Handpicked. Trusted. Loved.',
     icon: 'diamond',
   },
   {
     title: 'Easy Returns',
+    shortLabel: 'Returns',
+    mobileHint: '7-day returns',
     description: 'Hassle-free returns within 7 days.',
     icon: 'box',
   },
   {
     title: 'Free Shipping',
+    shortLabel: 'Shipping',
+    mobileHint: 'Above ₹1499',
     description: 'On orders above ₹1499.',
     icon: 'truck',
   },
   {
     title: 'Secure Payments',
+    shortLabel: 'Secure',
+    mobileHint: 'Safe checkout',
     description: '100% safe & secured checkout.',
     icon: 'shield',
   },
@@ -82,44 +113,68 @@ function FeatureIcon({ type }) {
 function FeatureItem({ title, description, icon }) {
   return (
     <div className="flex items-center gap-3 px-5 py-4">
-      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-rose-200 text-rose-800">
+      <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/30 text-primary">
         <FeatureIcon type={icon} />
       </span>
       <div>
-        <p className="text-sm font-semibold text-stone-900">{title}</p>
-        <p className="mt-1 text-xs leading-5 text-stone-600 sm:text-sm">{description}</p>
+        <p className="text-sm font-semibold text-black">{title}</p>
+        <p className="mt-1 text-xs leading-5 text-black/70 sm:text-sm">{description}</p>
       </div>
+    </div>
+  );
+}
+
+function FeatureItemMobile({ shortLabel, mobileHint, icon }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-col items-center px-0.5 py-2.5 text-center">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-primary/30 text-primary [&_svg]:h-3.5 [&_svg]:w-3.5">
+        <FeatureIcon type={icon} />
+      </span>
+      <p className="mt-1 text-[9px] font-semibold leading-tight text-black">{shortLabel}</p>
+      <p className="mt-0.5 text-[8px] leading-tight text-black/65">{mobileHint}</p>
     </div>
   );
 }
 
 function ExploreEleganceSection() {
   return (
-    <section className="mx-auto max-w-[1600px] px-4 pb-8 pt-8  sm:px-6 sm:pt-14 md:px-8">
+    <section className="mx-auto w-full max-w-[1600px] overflow-x-hidden px-4 pb-8 pt-8 sm:px-6 sm:pt-14 md:px-8">
       <div className="mb-6 ">
-        <h2 className="font-serif text-3xl text-center font-medium text-rose-950 sm:text-4xl">Explore Elegance</h2>
+        <h2 className="font-serif text-3xl text-center font-medium text-black sm:text-4xl">Explore Elegance</h2>
       </div>
 
       <div className="overflow-x-auto pb-2 scrollbar-hide">
         <div className="flex min-w-max gap-5 sm:gap-6">
-          {eleganceImages.map((image, index) => (
-            <div
-              key={image}
-              className="w-[320px] shrink-0 overflow-hidden  bg-white lg:w-[430px]"
+          {eleganceSlides.map((slide) => (
+            <Link
+              key={slide.to}
+              to={slide.to}
+              className="w-[260px] shrink-0 overflow-hidden bg-white transition hover:opacity-95 sm:w-[320px] lg:w-[430px]"
             >
               <img
-                src={image}
-                alt={`Explore Elegance collection ${index + 1}`}
+                src={slide.image}
+                alt={slide.label}
                 className="block h-auto w-full object-cover"
                 loading="lazy"
               />
-            </div>
+            </Link>
           ))}
         </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[22px] border border-rose-100 bg-gradient-to-r from-[#fff7f4] to-[#fffdfc] shadow-[0_10px_30px_rgba(109,53,65,0.06)]">
-        <div className="grid md:grid-cols-4">
+      <div className="mt-4 w-full overflow-hidden rounded-[22px] border border-primary/15 bg-white shadow-[0_10px_30px_rgba(94,48,62,0.06)]">
+        <div className="flex w-full divide-x divide-primary/10 md:hidden">
+          {featureItems.map((item) => (
+            <FeatureItemMobile
+              key={item.title}
+              shortLabel={item.shortLabel}
+              mobileHint={item.mobileHint}
+              icon={item.icon}
+            />
+          ))}
+        </div>
+
+        <div className="hidden md:grid md:grid-cols-4">
           {featureItems.map((item) => (
             <FeatureItem
               key={item.title}

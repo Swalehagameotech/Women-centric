@@ -5,6 +5,8 @@ import BestsellerCategoriesSection from '../components/BestsellerCategoriesSecti
 import DiscountDealsSection from '../components/DiscountDealsSection';
 import ExploreEleganceSection from '../components/ExploreEleganceSection';
 import NewLaunchSection from '../components/NewLaunchSection';
+import CategoryImageStrip from '../components/CategoryImageStrip';
+import { fetchCategories } from '../utils/products';
 
 const heroPromoMessage = '50% off on Luxury Bags grab the opportunity';
 const heroPromoVideo =
@@ -139,9 +141,29 @@ function PromiseIcon({ type }) {
   );
 }
 
+const categoriesWithSubcategories = (categories) =>
+  categories.filter(
+    (category) => Array.isArray(category.subcategory) && category.subcategory.length > 0,
+  );
+
 function Home() {
   const promiseSectionRef = useRef(null);
   const [showPromiseSection, setShowPromiseSection] = useState(false);
+  const [navCategories, setNavCategories] = useState([]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchCategories({ signal: controller.signal })
+      .then((data) => setNavCategories(categoriesWithSubcategories(data)))
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.error('Failed to load categories:', err);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
 
   useEffect(() => {
     const section = promiseSectionRef.current;
@@ -166,7 +188,7 @@ function Home() {
   }, []);
 
   return (
-    <div>
+    <div className="w-full max-w-full overflow-x-clip">
       <section className="pt-2 sm:pt-3">
         <div className="w-full">
           <div className="promo-strip text-center">
@@ -186,6 +208,12 @@ function Home() {
         </div>
       </section>
 
+      {navCategories.length > 0 && (
+        <div className="mt-3 md:hidden">
+          <CategoryImageStrip categories={navCategories} />
+        </div>
+      )}
+
       <ExploreEleganceSection />
       <AutoBannerSlider />
       <NewLaunchSection />
@@ -194,41 +222,45 @@ function Home() {
 
 
 
-      <section ref={promiseSectionRef} className="bg-white">
+      <section ref={promiseSectionRef} className="overflow-hidden bg-white">
         <div
           className={`mx-auto max-w-7xl px-4 py-16 transition-all duration-700 ease-out sm:px-6 lg:py-20 ${
-            showPromiseSection ? 'translate-x-0 opacity-100' : 'translate-x-24 opacity-0'
+            showPromiseSection
+              ? 'translate-x-0 opacity-100'
+              : 'opacity-0 md:translate-x-24'
           }`}
         >
           <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
             <div className="lg:pr-4">
               <div className="hidden items-center gap-5 lg:flex">
-                <h2 className="font-serif text-5xl leading-[0.95] text-rose-950 xl:text-6xl">
+                <h2 className="font-serif text-5xl leading-[0.95] text-black xl:text-6xl">
                   Why Women
                   <br />
-                  Choose Lumiere
+                  Choose Style By Her
                 </h2>
-                <span className="h-px flex-1 bg-rose-200" />
+                <span className="h-px flex-1 bg-primary/30" />
               </div>
 
               <div className="lg:hidden">
-                <h2 className="font-serif text-3xl text-rose-950 sm:text-4xl">Why Women Choose Lumiere</h2>
+                <h2 className="font-serif text-3xl text-black sm:text-4xl">
+                  Why Women Choose Style By Her
+                </h2>
               </div>
 
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-stone-600">
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-black/70">
                 We believe shopping should feel personal, empowering, and effortless. From product
                 selection to customer care, every detail is built around you.
               </p>
             </div>
 
-            <div className="rounded-[28px] border border-rose-200 bg-white px-4 py-5 shadow-[0_12px_36px_rgba(109,53,65,0.08)] sm:px-6 sm:py-6">
-              <div className="grid grid-cols-2 gap-x-5 gap-y-6 sm:grid-cols-3">
+            <div className="rounded-[28px] border border-primary/20 bg-white px-3 py-4 shadow-[0_12px_36px_rgba(94,48,62,0.08)] sm:px-6 sm:py-6">
+              <div className="grid grid-cols-3 gap-x-2 gap-y-5 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-6">
                 {promiseItems.map((item) => (
                   <div key={item.title} className="flex flex-col items-center text-center">
-                    <span className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-900 text-white">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white sm:h-14 sm:w-14">
                       <PromiseIcon type={item.icon} />
                     </span>
-                    <p className="mt-3 text-sm font-medium leading-6 text-stone-700 sm:text-base">
+                    <p className="mt-2 text-[10px] font-medium leading-tight text-black sm:mt-3 sm:text-sm sm:leading-6">
                       {item.title}
                     </p>
                   </div>
@@ -260,7 +292,7 @@ function Home() {
               </p>
               <Link
                 to="/contact"
-                className="mt-6 inline-block rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
+                className="btn-solid mt-6 inline-block"
               >
                 Contact us today
               </Link>
