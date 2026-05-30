@@ -16,8 +16,19 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import ShippingReturns from './pages/ShippingReturns';
 import AccountSettings from './pages/AccountSettings';
 import Orders from './pages/Orders';
+import OrderDetail from './pages/OrderDetail';
 import Checkout from './pages/Checkout';
 import Search from './pages/Search';
+import AdminLayout from './admin-panel/AdminLayout';
+import Dashboard from './admin-panel/pages/Dashboard';
+import AllProducts from './admin-panel/pages/products/AllProducts';
+import AddProduct from './admin-panel/pages/products/AddProduct';
+import EditProduct from './admin-panel/pages/products/EditProduct';
+import AllCategories from './admin-panel/pages/categories/AllCategories';
+import AddCategory from './admin-panel/pages/categories/AddCategory';
+import EditCategory from './admin-panel/pages/categories/EditCategory';
+import AdminOrders from './admin-panel/pages/Orders';
+import AdminUsers from './admin-panel/pages/Users';
 
 function App() {
   return (
@@ -25,6 +36,17 @@ function App() {
       <CartProvider>
         <WishlistProvider>
           <Routes>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="products" element={<AllProducts />} />
+              <Route path="products/add" element={<AddProduct />} />
+              <Route path="products/edit/:id" element={<EditProduct />} />
+              <Route path="categories" element={<AllCategories />} />
+              <Route path="categories/add" element={<AddCategory />} />
+              <Route path="categories/edit/:id" element={<EditCategory />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="users" element={<AdminUsers />} />
+            </Route>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
               <Route path="category/:slug" element={<CategoryPage />} />
@@ -53,6 +75,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Orders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="orders/:id"
+                element={
+                  <ProtectedRoute>
+                    <OrderDetail />
                   </ProtectedRoute>
                 }
               />

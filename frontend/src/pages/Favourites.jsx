@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import PageEmptyState from '../components/PageEmptyState';
+import PageLayout from '../components/PageLayout';
 import ProductCard from '../components/ProductCard';
 import { useWishlist } from '../context/WishlistContext';
 
@@ -6,28 +8,32 @@ function Favourites() {
   const { items } = useWishlist();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="text-left font-serif text-3xl text-black sm:text-4xl">Favourites</h1>
-      <p className="mt-2 text-sm text-black/70">
-        {items.length === 0
-          ? 'Save items you love by tapping the heart on any product.'
-          : `${items.length} saved ${items.length === 1 ? 'item' : 'items'}`}
-      </p>
-
+    <PageLayout
+      title="Favourites"
+      description={
+        items.length === 0
+          ? undefined
+          : `${items.length} saved ${items.length === 1 ? 'item' : 'items'}`
+      }
+    >
       {items.length === 0 ? (
-        <div className="mt-12 text-center">
+        <PageEmptyState
+          message="You don't have any products in your favourites yet."
+          hint="Tap the heart on any product to save it here for later."
+          showExploreLinks={false}
+        >
           <Link to="/" className="btn-solid inline-block">
-            Continue shopping
+            Discover products
           </Link>
-        </div>
+        </PageEmptyState>
       ) : (
-        <div className="mt-8 grid grid-cols-2 justify-items-center gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+        <div className="product-grid mt-8">
           {items.map((product) => (
             <ProductCard key={product._id} product={product} compact />
           ))}
         </div>
       )}
-    </div>
+    </PageLayout>
   );
 }
 

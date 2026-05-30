@@ -6,6 +6,7 @@ import CategoryImageStrip from './CategoryImageStrip';
 import Footer from './Footer';
 import MobileBottomBar from './MobileBottomBar';
 import MobileCatalogSheet from './MobileCatalogSheet';
+import { getApiBaseUrl } from '../config/env';
 
 const categoriesWithSubcategories = (categories) =>
   categories.filter(
@@ -29,11 +30,9 @@ function Layout() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-
     const loadCategories = async () => {
       try {
-        const response = await fetch(`${apiBaseUrl}/api/categories`, {
+        const response = await fetch(`${getApiBaseUrl()}/api/categories`, {
           signal: controller.signal,
         });
 

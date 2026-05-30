@@ -248,7 +248,7 @@ function ProductDetail() {
         ) : relatedProducts.length === 0 ? (
           <p className="mt-8 text-center font-medium text-black/70">No similar products right now.</p>
         ) : (
-          <div className="mt-8 grid grid-cols-2 justify-items-center gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+          <div className="product-grid mt-8">
             {relatedProducts.map((related) => (
               <ProductCard key={related._id} product={related} compact />
             ))}

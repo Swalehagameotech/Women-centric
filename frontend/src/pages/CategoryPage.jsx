@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
+import PageEmptyState, { PageTitle } from '../components/PageEmptyState';
 import ProductCard from '../components/ProductCard';
+import { NEW_LAUNCH_BADGE_IMAGE } from '../utils/badges';
 import {
   COLLECTION_BY_SLUG,
   fetchCategories,
@@ -8,9 +10,6 @@ import {
   resolveCategoryFromSlug,
   shuffleProducts,
 } from '../utils/products';
-
-const bestsellerBadgeImage =
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779714263/sc-3_bu9enf.webp';
 
 function CategoryPage() {
   const { slug } = useParams();
@@ -22,7 +21,7 @@ function CategoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const isBestsellerPage = slug === 'bestseller';
+  const isNewLaunchPage = slug === 'new-launch';
   const isCollectionPage = Boolean(COLLECTION_BY_SLUG[slug]);
 
   useEffect(() => {
@@ -129,21 +128,33 @@ function CategoryPage() {
       )}
 
       <div className="pt-6">
-      {products.length === 0 ? (
-        <p className="text-center text-black/70">No products found yet.</p>
-      ) : (
-        <div className="grid grid-cols-2 justify-items-center gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+        <PageTitle>{category.name}</PageTitle>
+        {activeSubcategory && (
+          <p className="mt-2 text-sm text-black/70">{activeSubcategory}</p>
+        )}
+
+        {products.length === 0 ? (
+          <PageEmptyState
+            message={`There are no products in ${category.name} yet.`}
+            hint="Check back soon or explore other categories from the home page."
+          >
+            <Link to="/" className="btn-solid inline-block">
+              Go to Home
+            </Link>
+          </PageEmptyState>
+        ) : (
+        <div className="product-grid mt-8">
           {products.map((product) => (
             <ProductCard
               key={product._id}
               product={product}
               compact
-              showBestsellerBadge={isBestsellerPage}
-              bestsellerBadgeImage={bestsellerBadgeImage}
+              showNewLaunchBadge={isNewLaunchPage}
+              newLaunchBadgeImage={NEW_LAUNCH_BADGE_IMAGE}
             />
           ))}
         </div>
-      )}
+        )}
       </div>
     </div>
   );

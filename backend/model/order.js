@@ -127,8 +127,8 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
-      default: 'pending',
+      enum: ['placed', 'processing', 'shipped', 'delivered', 'cancelled', 'pending', 'confirmed'],
+      default: 'placed',
     },
 
     paymentStatus: {
@@ -153,6 +153,12 @@ const orderSchema = new mongoose.Schema(
 );
 
 orderSchema.index({ user: 1, createdAt: -1 });
+
+orderSchema.pre('save', function applyPaidOnDelivered() {
+  if (this.isModified('status') && this.status === 'delivered') {
+    this.paymentStatus = 'paid';
+  }
+});
 
 const Order = mongoose.model('Order', orderSchema);
 

@@ -1,25 +1,31 @@
-import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import PageEmptyState, { PageTitle } from '../components/PageEmptyState';
 import { authFetch } from '../utils/api';
-import { formatAddressDisplay } from '../utils/address';
 import { formatPrice } from '../utils/products';
+import {
+  canUserCancelOrder,
+  getOrderStatusLabel,
+  getPaymentStatusLabel,
+  orderStatusBadgeClass,
+  paymentStatusBadgeClass,
+} from '../utils/orders';
 
-const statusLabels = {
-  pending: 'Pending',
-  confirmed: 'Confirmed',
-  shipped: 'Shipped',
-  delivered: 'Delivered',
-  cancelled: 'Cancelled',
-};
+function formatOrderDate(value) {
+  return new Date(value).toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
 
 function Orders() {
-  const location = useLocation();
-  const highlightOrderId = location.state?.highlightOrderId;
-  const highlightedRef = useRef(null);
-
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cancellingId, setCancellingId] = useState(null);
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,15 +51,25 @@ function Orders() {
     return () => controller.abort();
   }, []);
 
-  useEffect(() => {
-    if (!highlightOrderId || loading) return;
+  const handleCancel = async (orderId) => {
+    if (!window.confirm('Cancel this order?')) return;
 
-    const timer = window.setTimeout(() => {
-      highlightedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+    setCancellingId(orderId);
+    setActionError('');
 
-    return () => window.clearTimeout(timer);
-  }, [highlightOrderId, loading, orders]);
+    try {
+      const result = await authFetch(`/api/orders/${orderId}/cancel`, {
+        method: 'PATCH',
+      });
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? result.data : o)),
+      );
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setCancellingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -72,135 +88,115 @@ function Orders() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">My account</p>
-      <h1 className="mt-2 font-serif text-3xl text-black sm:text-4xl">Orders</h1>
-      <p className="mt-2 text-sm text-black/70">All purchases placed with your account.</p>
+    <div className="min-h-[50vh] bg-stone-50/80">
+      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+        <PageTitle align="center">Orders</PageTitle>
 
-      {highlightOrderId && orders.some((order) => order._id === highlightOrderId) && (
-        <p className="mt-6 rounded-lg bg-primary/10 px-4 py-3 text-sm font-medium text-primary">
-          Your latest order is highlighted below.
-        </p>
-      )}
+        {actionError && (
+          <p className="mt-6 text-center text-sm text-red-600">{actionError}</p>
+        )}
 
-      {orders.length === 0 ? (
-        <div className="mt-12 rounded-2xl border border-black/10 bg-white p-10 text-center">
-          <p className="text-black/70">You have not placed any orders yet.</p>
-          <Link to="/" className="btn-solid mt-6 inline-block">
-            Start shopping
-          </Link>
-        </div>
-      ) : (
-        <ul className="mt-8 space-y-6">
-          {orders.map((order) => {
-            const ship = formatAddressDisplay(order.shippingAddress);
-            const isHighlighted = highlightOrderId === order._id;
+        {orders.length === 0 ? (
+          <PageEmptyState
+            message="You don't have any orders yet."
+            hint="When you place an order, it will show up here with status and details."
+          >
+            <Link to="/" className="btn-solid inline-block">
+              Start shopping
+            </Link>
+          </PageEmptyState>
+        ) : (
+          <ul className="mt-10 space-y-6">
+            {orders.map((order) => {
+              const firstItem = order.items[0];
+              const cancellable = canUserCancelOrder(order.status);
 
-            return (
-              <li
-                key={order._id}
-                ref={isHighlighted ? highlightedRef : null}
-                id={`order-${order._id}`}
-              >
-                <article
-                  className={`rounded-2xl border bg-white p-5 sm:p-6 ${
-                    isHighlighted
-                      ? 'border-primary ring-2 ring-primary/30'
-                      : 'border-black/10'
-                  }`}
-                >
-                  {isHighlighted && (
-                    <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-primary">
-                      Just placed
-                    </p>
-                  )}
-
-                  <div className="flex flex-wrap items-start justify-between gap-3 border-b border-black/10 pb-4">
-                    <div>
-                      <p className="text-sm font-semibold text-black">{order.orderNumber}</p>
-                      <p className="mt-1 text-xs text-black/60">
-                        {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
+              return (
+                <li key={order._id}>
+                  <article className="overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm sm:px-5">
+                    {/* Header: order id | date + price + badges */}
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-sm font-bold tracking-tight text-gray-900 sm:text-base">
+                        #{order.orderNumber}
                       </p>
+                      <div className="min-w-0 text-right">
+                        <p className="text-xs text-gray-500">
+                          {formatOrderDate(order.createdAt)}
+                        </p>
+                        <div className="mt-1 flex flex-wrap items-center justify-end gap-1.5">
+                          <p className="text-base font-bold text-gray-900 sm:text-lg">
+                            {formatPrice(order.total)}
+                          </p>
+                          <span
+                            className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold sm:text-xs ${orderStatusBadgeClass(order.status)}`}
+                          >
+                            {getOrderStatusLabel(order.status)}
+                          </span>
+                          <span
+                            className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold sm:text-xs ${paymentStatusBadgeClass(order.paymentStatus)}`}
+                          >
+                            {getPaymentStatusLabel(order.paymentStatus)}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold capitalize text-primary">
-                        {statusLabels[order.status] || order.status}
-                      </span>
-                      <p className="mt-2 text-lg font-bold text-black">{formatPrice(order.total)}</p>
-                    </div>
-                  </div>
 
-                  <ul className="mt-4 space-y-4">
-                    {order.items.map((item) => (
-                      <li key={`${order._id}-${item.product}`} className="flex gap-4">
-                        <div className="h-16 w-16 shrink-0 overflow-hidden bg-stone-100">
-                          {item.image ? (
+                    {/* Product preview */}
+                    {firstItem && (
+                      <div className="mt-2.5 flex items-center gap-3">
+                        <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50 sm:h-16 sm:w-16">
+                          {firstItem.image ? (
                             <img
-                              src={item.image}
-                              alt={item.name}
+                              src={firstItem.image}
+                              alt={firstItem.name}
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <div className="flex h-full items-center justify-center text-[10px] text-black/40">
+                            <div className="flex h-full items-center justify-center text-xs text-gray-400">
                               No image
                             </div>
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-black">{item.brand || item.name}</p>
-                          <p className="text-sm text-black/60">
-                            Qty {item.quantity} · {formatPrice(item.discounted_price)} each
+                          <p className="text-sm font-semibold text-gray-900">
+                            {firstItem.name}
                           </p>
-                          <p className="text-sm font-semibold text-black">
-                            {formatPrice(item.line_total)}
+                          <p className="mt-0.5 text-xs text-gray-500">
+                            Qty: {firstItem.quantity}
+                            {order.items.length > 1 &&
+                              ` (+${order.items.length - 1} more item${order.items.length > 2 ? 's' : ''})`}
                           </p>
                         </div>
-                      </li>
-                    ))}
-                  </ul>
+                      </div>
+                    )}
 
-                  <div className="mt-4 rounded-xl bg-black/[0.03] p-4 text-sm text-black/80">
-                    <p className="font-medium text-black">Deliver to</p>
-                    <p className="mt-1">
-                      {ship.name} · {ship.phone}
-                    </p>
-                    <p className="mt-1 leading-relaxed">
-                      {ship.landmark}
-                      <br />
-                      {ship.city}, {ship.state} — {ship.pincode}
-                    </p>
-                  </div>
-
-                  <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-3">
-                    <div>
-                      <dt className="text-black/60">Subtotal</dt>
-                      <dd className="font-medium text-black">{formatPrice(order.subtotal)}</dd>
+                    {/* Actions — bottom right */}
+                    <div className="mt-2.5 flex flex-wrap items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/orders/${order._id}`)}
+                        className="rounded-lg border border-gray-300 bg-white px-4 py-1.5 text-sm font-medium text-gray-900 transition hover:border-gray-400 hover:bg-gray-50"
+                      >
+                        View Details
+                      </button>
+                      {cancellable && (
+                        <button
+                          type="button"
+                          onClick={() => handleCancel(order._id)}
+                          disabled={cancellingId === order._id}
+                          className="rounded-lg border border-red-400 bg-white px-4 py-1.5 text-sm font-medium text-red-600 transition hover:border-red-500 hover:bg-red-50 disabled:opacity-50"
+                        >
+                          {cancellingId === order._id ? 'Cancelling…' : 'Cancel Order'}
+                        </button>
+                      )}
                     </div>
-                    <div>
-                      <dt className="text-black/60">Delivery</dt>
-                      <dd className="font-medium text-black">
-                        {order.deliveryCharges === 0
-                          ? 'Free'
-                          : formatPrice(order.deliveryCharges)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-black/60">Payment</dt>
-                      <dd className="font-medium capitalize text-black">
-                        {order.paymentMethod} · {order.paymentStatus}
-                      </dd>
-                    </div>
-                  </dl>
-                </article>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

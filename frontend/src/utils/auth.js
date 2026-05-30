@@ -1,7 +1,9 @@
+import { getApiBaseUrl } from '../config/env';
+
+export { getApiBaseUrl };
+
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'auth_user';
-
-export const getApiBaseUrl = () => import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export const saveAuth = (token, user) => {
   localStorage.setItem(TOKEN_KEY, token);

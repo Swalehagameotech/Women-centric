@@ -44,10 +44,11 @@ function Checkout() {
   const itemCount = checkoutItems.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
+    if (placedOrder) return;
     if (checkoutItems.length === 0) {
       navigate('/basket', { replace: true });
     }
-  }, [checkoutItems.length, navigate]);
+  }, [checkoutItems.length, navigate, placedOrder]);
 
   useEffect(() => {
     const loadAddresses = async () => {
@@ -111,12 +112,17 @@ function Checkout() {
 
       await syncCartToServer(checkoutItems);
       const result = await placeOrderWithAddress(addressId, deliveryCharges);
+      const order = result.data;
+
+      if (!order) {
+        throw new Error('Order placed but confirmation details were missing. Check your orders.');
+      }
+
+      setPlacedOrder(order);
 
       if (!isBuyNow) {
         clearCart();
       }
-
-      setPlacedOrder(result.data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -134,20 +140,21 @@ function Checkout() {
     navigate('/');
   };
 
-  if (checkoutItems.length === 0) {
+  if (!placedOrder && checkoutItems.length === 0) {
     return null;
   }
 
-  return (
-    <>
-      {placedOrder && (
-        <OrderSuccessModal
-          order={placedOrder}
-          onViewOrders={handleViewOrders}
-          onGoHome={handleGoHome}
-        />
-      )}
+  if (placedOrder) {
+    return (
+      <OrderSuccessModal
+        order={placedOrder}
+        onViewOrders={handleViewOrders}
+        onGoHome={handleGoHome}
+      />
+    );
+  }
 
+  return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
       <h1 className="text-left font-serif text-3xl text-black sm:text-4xl">Checkout</h1>
 
@@ -329,7 +336,6 @@ function Checkout() {
         </aside>
       </div>
     </div>
-    </>
   );
 }
 

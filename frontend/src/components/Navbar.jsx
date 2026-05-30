@@ -195,13 +195,12 @@ function Navbar({ categories = [] }) {
             </Link>
 
             {loggedIn ? (
-              <button
-                type="button"
-                onClick={signOut}
-                className="rounded-lg border border-primary px-3.5 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/5"
+              <span
+                className="rounded-lg border border-primary/30 px-3.5 py-1.5 text-sm font-medium text-primary"
+                aria-label={`Signed in as ${user?.name || 'user'}`}
               >
-                {user?.name ? ` ${user.name.split(' ')[0]}` : ''}
-              </button>
+                {user?.name?.split(' ')[0] || 'Account'}
+              </span>
             ) : (
               <button
                 type="button"

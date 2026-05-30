@@ -1,4 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
+import PageEmptyState from '../components/PageEmptyState';
+import PageLayout from '../components/PageLayout';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/products';
@@ -31,21 +33,22 @@ function Basket() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
-        <h1 className="text-left font-serif text-3xl text-black sm:text-4xl">Shopping Cart</h1>
-        <div className="mt-12 text-center">
-          <p className="text-sm text-black/70">Your basket is empty.</p>
-          <Link to="/" className="btn-solid mt-8 inline-block">
-            Continue shopping
+      <PageLayout title="Your Basket">
+        <PageEmptyState
+          message="You don't have any products in your basket yet."
+          hint="Browse our collections and add items you love — they'll appear here."
+          showExploreLinks={false}
+        >
+          <Link to="/" className="btn-solid inline-block">
+            Shop on Home
           </Link>
-        </div>
-      </div>
+        </PageEmptyState>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="text-left font-serif text-3xl text-black sm:text-4xl">Your Basket</h1>
+    <PageLayout title="Your Basket">
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-start">
         <ul className="space-y-4">
@@ -156,7 +159,7 @@ function Basket() {
           </Link>
         </aside>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

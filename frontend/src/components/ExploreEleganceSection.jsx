@@ -23,7 +23,7 @@ const eleganceSlides = [
     label: 'Footwear',
   },
   {
-    image: 'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/5_mtynxn.png',
+    image: 'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780139161/Untitled_500_x_400_px_3_rgsob1.png',
     to: '/category/luxury-essentials',
     label: 'Luxury Essentials',
   },

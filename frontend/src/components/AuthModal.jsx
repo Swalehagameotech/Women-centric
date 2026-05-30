@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getApiBaseUrl, saveAuth } from '../utils/auth';
+import { getApiBaseUrl } from '../config/env';
+import { saveAuth } from '../utils/auth';
 
 const validateNameClient = (name) => {
   const trimmed = name.trim().replace(/\s+/g, ' ');

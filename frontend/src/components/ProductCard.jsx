@@ -20,9 +20,10 @@ function HeartIcon({ filled = false }) {
 
 function ProductCard({
   product,
-  showBestsellerBadge = false,
-  bestsellerBadgeImage,
+  showNewLaunchBadge = false,
+  newLaunchBadgeImage,
   compact = false,
+  featured = false,
 }) {
   const navigate = useNavigate();
   const { requireAuth } = useAuth();
@@ -49,20 +50,26 @@ function ProductCard({
     toggleItem(product);
   };
 
+  const isCompact = compact && !featured;
+
   return (
     <article
-      className={`flex flex-col bg-white ${compact ? 'w-full min-w-0' : 'w-[240px]'}`}
+      className={`flex w-full min-w-0 flex-col bg-white ${
+        featured ? '' : isCompact ? 'product-card--compact' : 'max-w-[165px]'
+      }`}
     >
       <Link
         to={`/product/${product._id}`}
-        className="relative block aspect-[4/5] w-full overflow-hidden bg-stone-100"
+        className={`relative block w-full overflow-hidden bg-stone-100 ${
+          featured ? 'aspect-[8/9]' : 'aspect-[7/8]'
+        }`}
       >
-        {showBestsellerBadge && bestsellerBadgeImage && (
+        {showNewLaunchBadge && newLaunchBadgeImage && (
           <img
-            src={bestsellerBadgeImage}
+            src={newLaunchBadgeImage}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 z-10 w-[88px] -translate-x-3 -translate-y-1 -rotate-20 object-contain"
+            className="pointer-events-none absolute left-0 top-0 z-10 w-[76px] -translate-x-2 -translate-y-1 -rotate-12 object-contain sm:w-20"
           />
         )}
 
@@ -72,7 +79,11 @@ function ProductCard({
           className={`absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm transition ${
             isFavourite ? 'text-primary' : 'text-primary/70 hover:text-primary'
           }`}
-          aria-label={isFavourite ? `Remove ${product.name} from favourites` : `Add ${product.name} to favourites`}
+          aria-label={
+            isFavourite
+              ? `Remove ${product.name} from favourites`
+              : `Add ${product.name} to favourites`
+          }
           aria-pressed={isFavourite}
         >
           <HeartIcon filled={isFavourite} />
@@ -85,7 +96,7 @@ function ProductCard({
         <Link
           to={`/product/${product._id}`}
           className={`line-clamp-2 font-normal leading-tight text-black hover:underline ${
-            compact ? 'text-[11px] sm:text-xs' : 'text-sm'
+            isCompact ? 'text-xs sm:text-sm' : 'text-sm'
           }`}
         >
           {displayBrand}
@@ -93,7 +104,7 @@ function ProductCard({
 
         <div
           className={`mt-1 flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 ${
-            compact ? 'text-[10px] sm:text-xs' : 'text-sm'
+            isCompact ? 'text-[10px] sm:text-xs' : 'text-sm'
           }`}
         >
           <span className="font-semibold text-black">{formatPrice(product.discounted_price)}</span>
@@ -101,7 +112,7 @@ function ProductCard({
             <>
               <span className="text-black/45 line-through">{formatPrice(product.original_price)}</span>
               {discountLabel && (
-                <span className="bg-primary px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                <span className="bg-primary px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white sm:text-[10px]">
                   {discountLabel}
                 </span>
               )}
@@ -113,7 +124,7 @@ function ProductCard({
           type="button"
           onClick={handleAddToCart}
           className={`mt-2 w-full border border-black/80 bg-white font-normal text-black transition hover:bg-black/5 ${
-            compact ? 'py-1.5 text-[10px] sm:py-2 sm:text-xs' : 'py-2 text-sm'
+            isCompact ? 'py-1.5 text-[10px] sm:py-2 sm:text-xs' : 'py-2 text-sm'
           }`}
         >
           Add to Cart

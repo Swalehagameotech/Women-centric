@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
+import { NEW_LAUNCH_BADGE_IMAGE } from '../utils/badges';
 import { fetchProducts } from '../utils/products';
 
 const featuredImageDesktop =
@@ -61,7 +62,7 @@ function NewLaunchSection() {
               <img
                 src={featuredImageMobile}
                 alt="New launch featured collection"
-                className="block aspect-square w-full object-cover transition hover:opacity-95"
+                className="block aspect-[4/5] w-full object-cover transition hover:opacity-95"
                 loading="lazy"
               />
             </Link>
@@ -74,9 +75,14 @@ function NewLaunchSection() {
                   {homeProducts.map((product) => (
                     <div
                       key={product._id}
-                      className="w-[calc((100vw-2rem-0.5rem)/2)] max-w-[calc((100%-0.5rem)/2)] shrink-0 snap-start"
+                      className="w-[calc((100vw-2rem-0.75rem)/2)] max-w-[240px] shrink-0 snap-start"
                     >
-                      <ProductCard product={product} compact />
+                      <ProductCard
+                        product={product}
+                        featured
+                        showNewLaunchBadge
+                        newLaunchBadgeImage={NEW_LAUNCH_BADGE_IMAGE}
+                      />
                     </div>
                   ))}
                 </div>
@@ -113,19 +119,24 @@ function NewLaunchSection() {
                   <img
                     src={featuredImageDesktop}
                     alt="New launch featured collection"
-                    className="h-[320px] object-cover transition hover:opacity-95 lg:h-[430px]"
+                    className="h-[330px] object-cover transition hover:opacity-95 lg:h-[420px]"
                     loading="lazy"
                   />
                 </Link>
 
                 {homeProducts.length === 0 ? (
-                  <p className="flex h-[280px] w-[240px] shrink-0 items-center justify-center text-black/70">
+                  <p className="flex h-[260px] w-[200px] shrink-0 items-center justify-center text-black/70">
                     No products yet.
                   </p>
                 ) : (
                   homeProducts.map((product) => (
-                    <div key={product._id} className="shrink-0">
-                      <ProductCard product={product} />
+                    <div key={product._id} className="w-[260px] shrink-0">
+                      <ProductCard
+                        product={product}
+                        featured
+                        showNewLaunchBadge
+                        newLaunchBadgeImage={NEW_LAUNCH_BADGE_IMAGE}
+                      />
                     </div>
                   ))
                 )}

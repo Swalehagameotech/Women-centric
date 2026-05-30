@@ -95,8 +95,8 @@ export const createOrder = async (req, res) => {
       total,
       paymentMethod,
       notes,
-      status: 'pending',
-      paymentStatus: paymentMethod === 'cod' ? 'pending' : 'pending',
+      status: 'placed',
+      paymentStatus: 'pending',
     });
 
     for (const item of orderItems) {
@@ -133,6 +133,58 @@ export const getMyOrders = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const CANCELLABLE_STATUSES = ['placed', 'pending', 'processing'];
+
+export const cancelOrder = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found',
+      });
+    }
+
+    if (order.status === 'cancelled') {
+      return res.status(400).json({
+        success: false,
+        message: 'Order is already cancelled',
+      });
+    }
+
+    if (!CANCELLABLE_STATUSES.includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'This order can no longer be cancelled',
+      });
+    }
+
+    for (const item of order.items) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { stock: item.quantity },
+      });
+    }
+
+    order.status = 'cancelled';
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Order cancelled successfully',
+      data: order,
+    });
+  } catch (error) {
+    res.status(400).json({
       success: false,
       message: error.message,
     });

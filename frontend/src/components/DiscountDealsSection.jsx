@@ -4,7 +4,7 @@ import ProductCard from './ProductCard';
 import { fetchProducts } from '../utils/products';
 
 const discountBannerDesktop =
-  'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779790733/Untitled_1920_x_200_px_1920_x_150_px_1850_x_650_px_1850_x_350_px_xfc0ng.png';
+  'https://res.cloudinary.com/dsafvwkrf/video/upload/v1780137922/Untitled_1920_x_200_px_1920_x_150_px_1850_x_650_px_1850_x_350_px_1_hmxsuh.mp4';
 
 const discountBannerMobile =
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780051133/ChatGPT_Image_May_29_2026_04_01_00_PM_ys1db7.png';
@@ -47,10 +47,14 @@ function DiscountDealsSection() {
           alt="Special discount deals"
           className="block h-auto w-full max-w-full transition hover:opacity-95 md:hidden"
         />
-        <img
+        <video
+          className="hidden h-auto w-full max-w-full object-cover transition hover:opacity-95 md:block"
           src={discountBannerDesktop}
-          alt="Special discount deals"
-          className="hidden h-auto w-full max-w-full transition hover:opacity-95 md:block"
+          autoPlay
+          loop
+          muted
+          playsInline
+          aria-label="Special discount deals"
         />
       </Link>
 
@@ -60,7 +64,7 @@ function DiscountDealsSection() {
         ) : homeProducts.length === 0 ? (
           <p className="text-center text-black/70">No discount products yet.</p>
         ) : (
-          <div className="grid grid-cols-2 justify-items-center gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="product-grid">
             {homeProducts.map((product) => (
               <ProductCard key={product._id} product={product} compact />
             ))}

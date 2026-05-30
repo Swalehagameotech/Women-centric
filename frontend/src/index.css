@@ -63,6 +63,59 @@ body {
   .btn-outline {
     @apply inline-flex items-center justify-center rounded-full border border-primary bg-white px-5 text-sm font-semibold text-primary transition hover:bg-black/5;
   }
+
+  /* 4 per row on desktop; compact cards use a smaller fixed width (height follows 4/5 image ratio) */
+  .product-grid {
+    container-type: inline-size;
+    @apply grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-x-8 lg:gap-y-6;
+  }
+
+  .product-grid .product-card--compact {
+    @apply mx-auto w-full max-w-[140px] sm:max-w-[155px];
+  }
+
+  @container (min-width: 64rem) {
+    .product-grid .product-card--compact {
+      width: calc((100cqi - 4 * 1rem) / 6);
+      max-width: 100%;
+      justify-self: center;
+    }
+  }
+
+  .admin-shell {
+    --admin-sidebar: #1a1218;
+    --admin-sidebar-border: rgba(255, 255, 255, 0.08);
+    --admin-bg: #f3eef1;
+    --admin-surface: #ffffff;
+    --admin-text: #1f1419;
+    --admin-muted: rgba(31, 20, 25, 0.55);
+  }
+
+  .admin-content {
+    scrollbar-gutter: stable;
+  }
+
+  .admin-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .admin-content::-webkit-scrollbar-thumb {
+    background: rgba(94, 48, 62, 0.25);
+    border-radius: 999px;
+  }
+
+  .admin-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .admin-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 999px;
+  }
 }
 
 .scrollbar-hide {
