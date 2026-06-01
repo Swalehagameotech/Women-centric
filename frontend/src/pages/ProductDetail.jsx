@@ -150,7 +150,6 @@ function ProductDetail() {
   const handleAddToBag = () => {
     requireAuth(() => {
       addItem(product, quantity);
-      navigate('/basket');
     });
   };
 

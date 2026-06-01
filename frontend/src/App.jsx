@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -35,6 +36,7 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
+          <ScrollToTop />
           <Routes>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />

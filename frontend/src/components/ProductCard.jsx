@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -27,7 +27,6 @@ function ProductCard({
   hideAddToCart = false,
   priceOnly = false,
 }) {
-  const navigate = useNavigate();
   const { requireAuth } = useAuth();
   const { addItem } = useCart();
   const { toggleItem, isInWishlist } = useWishlist();
@@ -42,7 +41,6 @@ function ProductCard({
   const handleAddToCart = () => {
     requireAuth(() => {
       addItem(product);
-      navigate('/basket');
     });
   };
 
@@ -126,7 +124,7 @@ function ProductCard({
           <button
             type="button"
             onClick={handleAddToCart}
-            className={`mt-2 w-full border border-black/80 bg-white font-normal text-black transition hover:bg-black/5 ${
+            className={`mt-2 w-full border border-primary bg-white font-medium text-primary transition hover:bg-primary/5 ${
               isCompact ? 'py-1.5 text-[10px] sm:py-2 sm:text-xs' : 'py-2 text-sm'
             }`}
           >
