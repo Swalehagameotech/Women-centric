@@ -249,7 +249,7 @@ function Home() {
         <div className="relative overflow-hidden">
           <img
             className="h-[340px] w-full object-cover sm:h-[420px]"
-            src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1780316411/79bcf24f-1d22-40a6-8db0-e91b88222de9.png"
+            src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1780321343/ChatGPT_Image_Jun_1_2026_07_11_45_PM_nbgu9y.png"
             autoPlay
             loop
             muted
