@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import ProductCard from '../components/ProductCard';
+import EmailSubscribeSection from '../components/EmailSubscribeSection';
+import ProductRecommendationsRow from '../components/ProductRecommendationsRow';
+import ProductsLoader from '../components/ProductsLoader';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -12,7 +14,7 @@ import {
   shuffleProducts,
 } from '../utils/products';
 
-const RELATED_LIMIT = 8;
+const RECOMMENDATION_LIMIT = 10;
 
 function HeartIcon({ filled = false }) {
   return (
@@ -37,8 +39,10 @@ function ProductDetail() {
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [alsoViewedProducts, setAlsoViewedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [relatedLoading, setRelatedLoading] = useState(false);
+  const [alsoViewedLoading, setAlsoViewedLoading] = useState(false);
   const [error, setError] = useState('');
   const [quantity, setQuantity] = useState(1);
 
@@ -49,6 +53,7 @@ function ProductDetail() {
       setLoading(true);
       setError('');
       setRelatedProducts([]);
+      setAlsoViewedProducts([]);
 
       try {
         const data = await fetchProductById(id, { signal: controller.signal });
@@ -74,47 +79,60 @@ function ProductDetail() {
     const controller = new AbortController();
     const category = getPrimaryCategory(product.categories);
 
-    if (!category) return undefined;
-
-    const loadRelated = async () => {
+    const loadRecommendations = async () => {
       setRelatedLoading(true);
+      setAlsoViewedLoading(true);
+      setRelatedProducts([]);
+      setAlsoViewedProducts([]);
 
       try {
-        const categoryProducts = await fetchProducts({
-          category,
-          signal: controller.signal,
-        });
+        const [categoryProducts, allProducts] = await Promise.all([
+          category
+            ? fetchProducts({ category, signal: controller.signal })
+            : Promise.resolve([]),
+          fetchProducts({ signal: controller.signal }),
+        ]);
+
+        const excludeId = product._id;
 
         const related = shuffleProducts(
-          categoryProducts.filter((item) => item._id !== product._id),
-        ).slice(0, RELATED_LIMIT);
+          categoryProducts.filter((item) => item._id !== excludeId),
+        ).slice(0, RECOMMENDATION_LIMIT);
+
+        const relatedIds = new Set(related.map((item) => item._id));
+
+        const alsoViewed = shuffleProducts(
+          allProducts.filter((item) => item._id !== excludeId && !relatedIds.has(item._id)),
+        ).slice(0, RECOMMENDATION_LIMIT);
 
         setRelatedProducts(related);
+        setAlsoViewedProducts(alsoViewed);
       } catch (err) {
         if (err.name !== 'AbortError') {
-          console.error('Failed to load related products:', err);
+          console.error('Failed to load recommendations:', err);
         }
       } finally {
         setRelatedLoading(false);
+        setAlsoViewedLoading(false);
       }
     };
 
-    loadRelated();
+    loadRecommendations();
 
     return () => controller.abort();
   }, [product]);
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16 text-center font-medium text-black/70 sm:px-6">
-        Loading...
+      <div className="page-shell mx-auto max-w-6xl">
+        <ProductsLoader variant="page" label="Loading product…" />
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6">
+      <div className="page-shell mx-auto max-w-6xl text-center">
         <p className="font-medium text-black/70">{error || 'Product not found'}</p>
         <Link to="/" className="btn-solid mt-6 inline-block">
           Continue shopping
@@ -150,6 +168,7 @@ function ProductDetail() {
   };
 
   return (
+    <>
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="grid gap-8 md:grid-cols-2 md:gap-10 lg:gap-12 md:items-start">
         <div className="relative aspect-[4/5] w-full max-w-[320px] overflow-hidden bg-stone-100 sm:max-w-[360px] lg:max-w-[420px]">
@@ -238,24 +257,24 @@ function ProductDetail() {
         </div>
       </div>
 
-      <section className="mt-14 border-t border-black/10 pt-12 sm:mt-16">
-        <h2 className="text-center font-serif text-2xl font-medium text-black sm:text-3xl">
-          You may also like
-        </h2>
-
-        {relatedLoading ? (
-          <p className="mt-8 text-center font-medium text-black/70">Loading...</p>
-        ) : relatedProducts.length === 0 ? (
-          <p className="mt-8 text-center font-medium text-black/70">No similar products right now.</p>
-        ) : (
-          <div className="product-grid mt-8">
-            {relatedProducts.map((related) => (
-              <ProductCard key={related._id} product={related} compact />
-            ))}
-          </div>
-        )}
-      </section>
     </div>
+
+    <div className="mx-auto w-full max-w-[1600px] px-4 pb-16 pt-8 sm:px-6 sm:pt-10 md:px-8">
+      <ProductRecommendationsRow
+        title="You may also like"
+        products={relatedProducts}
+        loading={relatedLoading}
+      />
+
+      <ProductRecommendationsRow
+        title="Customers also viewed"
+        products={alsoViewedProducts}
+        loading={alsoViewedLoading}
+      />
+
+      <EmailSubscribeSection />
+    </div>
+    </>
   );
 }
 

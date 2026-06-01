@@ -73,7 +73,7 @@ function Orders() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16 text-center text-black/70 sm:px-6">
+      <div className="page-shell mx-auto max-w-4xl text-center text-black/70">
         Loading your orders...
       </div>
     );
@@ -81,7 +81,7 @@ function Orders() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
+      <div className="page-shell mx-auto max-w-4xl text-center">
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -89,7 +89,7 @@ function Orders() {
 
   return (
     <div className="min-h-[50vh] bg-stone-50/80">
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="page-shell mx-auto max-w-4xl">
         <PageTitle align="center">Orders</PageTitle>
 
         {actionError && (

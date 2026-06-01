@@ -1,6 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchProducts, formatPrice } from '../utils/products';
+import ProductsEmptyState from './ProductsEmptyState';
+import ProductsLoader from './ProductsLoader';
+import { fetchMixedHomeProducts, formatPrice } from '../utils/products';
+
+const BESTSELLER_MIX = [
+  { category: 'Womens Wear', subcategory: 'Sarees', count: 5, sareesOnly: true },
+  { category: 'Bags', count: 3 },
+  { category: 'Luxury Accessories', count: 3 },
+  { category: 'Luxury Essentials', count: 3 },
+  { category: 'Footwear', count: 2 },
+];
 
 const PRODUCT_SLOT_COUNT = 16;
 
@@ -82,20 +92,6 @@ const GRID_CELLS = [
   { kind: 'product', row: 3, col: 7 },
 ];
 
-function mergeProductLists(...lists) {
-  const merged = [];
-  const seen = new Set();
-  for (const list of lists) {
-    for (const product of list) {
-      if (!seen.has(product._id)) {
-        merged.push(product);
-        seen.add(product._id);
-      }
-    }
-  }
-  return merged;
-}
-
 function cellStyle(row, col) {
   return { gridRow: row, gridColumn: col };
 }
@@ -145,7 +141,7 @@ function BestsellerMosaicGrid({ products }) {
   let productIndex = 0;
 
   return (
-    <div className="mt-6 w-full sm:mt-8">
+    <div className="mt-4 w-full sm:mt-8">
       {/* Phone: swipe to see full desktop-style mosaic */}
       <div className="-mx-3 overflow-x-auto overscroll-x-contain px-3 pb-1 md:mx-0 md:overflow-hidden md:px-0">
         <div
@@ -183,9 +179,6 @@ function BestsellerMosaicGrid({ products }) {
           })}
         </div>
       </div>
-      <p className="mt-2 text-center text-[10px] text-black/45 md:hidden">
-        Swipe sideways to see the full layout
-      </p>
     </div>
   );
 }
@@ -200,12 +193,13 @@ function BestsellerCategoriesSection() {
 
     const loadProducts = async () => {
       try {
-        const [bestseller, luxuryAccessories, bags] = await Promise.all([
-          fetchProducts({ category: 'Bestseller', signal }),
-          fetchProducts({ category: 'Luxury Accessories', signal }),
-          fetchProducts({ category: 'Bags', signal }),
-        ]);
-        setProducts(mergeProductLists(bestseller, luxuryAccessories, bags));
+        const data = await fetchMixedHomeProducts({
+          signal,
+          primaryCategory: 'Bestseller',
+          supplemental: BESTSELLER_MIX,
+          limit: PRODUCT_SLOT_COUNT,
+        });
+        setProducts(data);
       } catch (error) {
         if (error.name !== 'AbortError') {
           console.error('Failed to load bestseller products:', error);
@@ -222,21 +216,21 @@ function BestsellerCategoriesSection() {
   const hasMore = products.length > PRODUCT_SLOT_COUNT;
 
   return (
-    <section className="w-full px-3 pb-12 pt-2 sm:px-4 md:px-5 lg:px-6">
+    <section className="w-full px-3 sm:px-4 md:px-5 lg:px-6">
       <div className="text-center">
         <h2 className="font-serif text-3xl font-medium text-black sm:text-4xl">Bestseller</h2>
       </div>
 
       {loading ? (
-        <p className="mt-8 text-center text-black/70">Loading products...</p>
+        <ProductsLoader className="mt-4" variant="section" label="Loading bestsellers…" />
       ) : products.length === 0 ? (
-        <p className="mt-8 text-center text-black/70">No products yet.</p>
+        <ProductsEmptyState className="mt-4" />
       ) : (
         <BestsellerMosaicGrid products={products} />
       )}
 
       {hasMore && (
-        <div className="mt-8 text-center">
+        <div className="mt-4 text-center sm:mt-6">
           <Link
             to="/category/bestseller"
             className="btn-solid inline-flex items-center gap-2 shadow-[0_12px_24px_rgba(94,48,62,0.2)]"

@@ -2,9 +2,9 @@ import LegalPage from '../components/LegalPage';
 
 function TermsAndConditions() {
   return (
-    <LegalPage label="Legal" title="Terms & Conditions">
+    <LegalPage title="Terms & Conditions">
       <p>
-        By using the Lumière Women&apos;s Collection website, you agree to these terms. Please read
+        By using the Style By Her website, you agree to these terms. Please read
         them carefully before placing an order.
       </p>
       <p>
@@ -22,7 +22,7 @@ function TermsAndConditions() {
         products purchased, except where prohibited by law.
       </p>
       <p>
-        These terms are governed by the laws of India. For questions, contact hello@lumiere.com.
+        These terms are governed by the laws of India. For questions, contact hello@stylebyher.com.
       </p>
     </LegalPage>
   );

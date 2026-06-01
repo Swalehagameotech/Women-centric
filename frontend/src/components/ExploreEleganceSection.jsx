@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom';
 const eleganceSlides = [
   {
     image:
-      'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779710818/Untitled_500_x_400_px_1_khw6uz.png',
+      'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780315690/7_wn5gxi.png',
+    to: '/category/indian-wear',
+    label: 'Indian Wear',
+  },
+  
+  {
+    image:
+      'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780315690/8_giptin.png',
     to: '/category/womens-wear',
     label: 'Womens Wear',
   },
@@ -138,7 +145,7 @@ function FeatureItemMobile({ shortLabel, mobileHint, icon }) {
 
 function ExploreEleganceSection() {
   return (
-    <section className="mx-auto w-full max-w-[1600px] overflow-x-hidden px-4 pb-8 pt-8 sm:px-6 sm:pt-14 md:px-8">
+    <section className="mx-auto w-full max-w-[1600px] overflow-x-hidden px-4 sm:px-6 md:px-8">
       <div className="mb-6 ">
         <h2 className="font-serif text-3xl text-center font-medium text-black sm:text-4xl">Explore Elegance</h2>
       </div>

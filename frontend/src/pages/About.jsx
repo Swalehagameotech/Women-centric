@@ -1,3 +1,5 @@
+import { PageTitle } from '../components/PageEmptyState';
+
 const values = [
   {
     title: 'Empowerment',
@@ -20,16 +22,13 @@ const values = [
 function About() {
   return (
     <div>
-      <section className="bg-white px-4 py-16 sm:px-6">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">About us</p>
-          <h1 className="mt-4 font-serif text-4xl text-black">Built for women, with heart</h1>
+      <section className="page-shell mx-auto max-w-3xl bg-white text-center">
+          <PageTitle align="center">Built for women, with heart</PageTitle>
           <p className="mt-5 text-base leading-relaxed text-black/70">
-            Lumière Women&apos;s Collection was founded with a simple mission: make premium women&apos;s
+            Style By Her was founded with a simple mission: make premium women&apos;s
             products accessible, beautiful, and easy to shop. We are more than a store — we are a
             community that champions style, self-care, and self-expression.
           </p>
-        </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">

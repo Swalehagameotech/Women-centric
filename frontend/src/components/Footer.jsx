@@ -12,7 +12,7 @@ function Footer() {
             <img
               src={siteLogo}
               alt="Style By Her logo"
-              className="h-12 w-auto max-w-[180px] object-contain sm:h-14"
+              className="h-8 w-auto max-w-[100px] object-contain sm:h-10 sm:max-w-[140px] md:h-11 md:max-w-[160px]"
             />
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-black/65">

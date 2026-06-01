@@ -2,9 +2,9 @@ import LegalPage from '../components/LegalPage';
 
 function PrivacyPolicy() {
   return (
-    <LegalPage label="Legal" title="Privacy Policy">
+    <LegalPage title="Privacy Policy">
       <p>
-        At Lumière Women&apos;s Collection, we respect your privacy. This policy explains what
+        At Style By Her, we respect your privacy. This policy explains what
         information we collect, how we use it, and the choices you have when you shop with us.
       </p>
       <p>
@@ -23,7 +23,7 @@ function PrivacyPolicy() {
       </p>
       <p>
         You may request access, correction, or deletion of your personal data by contacting us at
-        hello@lumiere.com. We may update this policy from time to time; continued use of our site
+        hello@stylebyher.com. We may update this policy from time to time; continued use of our site
         after changes means you accept the updated policy.
       </p>
     </LegalPage>

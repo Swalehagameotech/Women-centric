@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { authFetch } from '../utils/api';
 import { toCartItem } from '../utils/cart';
 import AddressFormFields from '../components/AddressFormFields';
+import { PageTitle } from '../components/PageEmptyState';
 import OrderSuccessModal from '../components/OrderSuccessModal';
 import { placeOrderWithAddress, syncCartToServer } from '../utils/checkout';
 import { emptyAddressForm, formatAddressDisplay } from '../utils/address';
@@ -155,8 +156,8 @@ function Checkout() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-      <h1 className="text-left font-serif text-3xl text-black sm:text-4xl">Checkout</h1>
+    <div className="page-shell mx-auto max-w-6xl">
+      <PageTitle>Checkout</PageTitle>
 
       {error && (
         <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>

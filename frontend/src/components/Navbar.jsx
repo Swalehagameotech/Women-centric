@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import MobileSideDrawer from './MobileSideDrawer';
+import { filterShopCategories } from '../utils/products';
 
 function SearchIcon() {
   return (
@@ -24,7 +25,7 @@ function HeartIcon() {
 
 function BasketIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M5 10h14l-1.5 9h-11Z" />
       <path d="M9 10a3 3 0 1 1 6 0" />
     </svg>
@@ -120,18 +121,18 @@ function Navbar({ categories = [] }) {
         id="site-header"
         className="fixed top-0 left-0 right-0 z-[100] w-full overflow-visible border-b border-black/10 bg-header shadow-sm"
       >
-        <nav className="relative z-10 mx-auto flex min-h-[64px] w-full max-w-[1400px] items-center gap-2 px-3 py-2 sm:min-h-[72px] sm:gap-3 sm:px-6 sm:py-2.5">
+        <nav className="relative z-10 mx-auto flex min-h-[52px] w-full max-w-[1400px] items-center gap-1.5 px-3 py-1.5 sm:min-h-[56px] sm:gap-2 sm:px-6 sm:py-2">
           <Link to="/" className="shrink-0">
             <img
               src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1780062681/S_5_cnc086.png"
               alt="Style By Her logo"
-              className="h-10 w-auto max-w-[120px] object-contain sm:h-14 sm:max-w-[200px] md:h-16 md:max-w-[240px]"
+              className="h-8 w-auto max-w-[100px] object-contain sm:h-10 sm:max-w-[140px] md:h-11 md:max-w-[160px]"
             />
           </Link>
 
           <form
             onSubmit={submitSearch}
-            className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-black/15 bg-white px-3 py-2 md:hidden"
+            className="flex min-w-0 flex-1 items-center gap-1.5 rounded-md border border-black/15 bg-white px-2.5 py-1.5 md:hidden"
           >
             <span className="text-primary">
               <SearchIcon />
@@ -149,7 +150,7 @@ function Navbar({ categories = [] }) {
             onSubmit={submitSearch}
             className="pointer-events-none absolute inset-0 hidden items-center justify-center md:flex"
           >
-            <div className="pointer-events-auto flex w-full max-w-md items-center gap-2 rounded-lg border border-black/15 bg-white px-4 py-2 text-black/50 shadow-sm lg:max-w-lg">
+            <div className="pointer-events-auto flex w-full max-w-md items-center gap-1.5 rounded-md border border-black/15 bg-white px-3 py-1.5 text-black/50 shadow-sm lg:max-w-lg">
               <span className="text-primary">
                 <SearchIcon />
               </span>
@@ -163,10 +164,10 @@ function Navbar({ categories = [] }) {
             </div>
           </form>
 
-          <div className="ml-auto hidden shrink-0 items-center gap-1.5 sm:gap-3 md:flex">
+          <div className="ml-auto hidden shrink-0 items-center gap-1 sm:gap-2 md:flex">
             <Link
               to="/favourites"
-              className="relative min-w-[64px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1.5 text-[11px] font-medium text-primary transition hover:bg-black/5 inline-flex"
+              className="relative min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-1 text-[10px] font-medium text-primary transition hover:bg-black/5 inline-flex"
             >
               <span className="relative inline-flex">
                 <HeartIcon />
@@ -181,7 +182,7 @@ function Navbar({ categories = [] }) {
 
             <Link
               to="/basket"
-              className="relative min-w-[64px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2 py-1.5 text-[11px] font-medium text-primary transition hover:bg-black/5 inline-flex"
+              className="relative min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-1 text-[10px] font-medium text-primary transition hover:bg-black/5 inline-flex"
             >
               <span className="relative inline-flex">
                 <BasketIcon />
@@ -196,7 +197,7 @@ function Navbar({ categories = [] }) {
 
             {loggedIn ? (
               <span
-                className="rounded-lg border border-primary/30 px-3.5 py-1.5 text-sm font-medium text-primary"
+                className="rounded-lg border border-primary/30 px-3 py-1 text-xs font-medium text-primary"
                 aria-label={`Signed in as ${user?.name || 'user'}`}
               >
                 {user?.name?.split(' ')[0] || 'Account'}
@@ -205,7 +206,7 @@ function Navbar({ categories = [] }) {
               <button
                 type="button"
                 onClick={() => openAuth('login')}
-                className="rounded-full bg-primary px-3.5 py-1.5 text-sm font-medium text-white transition hover:bg-primary-dark"
+                className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white transition hover:bg-primary-dark"
               >
                 Sign in
               </button>
@@ -215,7 +216,7 @@ function Navbar({ categories = [] }) {
               <button
                 type="button"
                 onClick={() => setMenuOpen((currentValue) => !currentValue)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-black/5"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-black/5"
                 aria-label="Open more options"
               >
                 <MoreIcon />
@@ -274,7 +275,7 @@ function Navbar({ categories = [] }) {
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-black/5 md:hidden"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-primary/30 text-primary transition hover:bg-black/5 md:hidden"
             aria-label="Open menu"
           >
             <MoreIcon />
@@ -285,7 +286,7 @@ function Navbar({ categories = [] }) {
       <MobileSideDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        categories={categories}
+        categories={filterShopCategories(categories)}
       />
 
       <div className="h-[var(--site-header-height)] shrink-0" aria-hidden="true" />

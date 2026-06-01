@@ -9,7 +9,7 @@ function PageLayout({
   className = '',
 }) {
   return (
-    <div className={`mx-auto ${maxWidth} px-4 py-10 sm:px-6 lg:px-8 ${className}`}>
+    <div className={`page-shell mx-auto ${maxWidth} ${className}`}>
       <PageTitle align={titleAlign}>{title}</PageTitle>
       {description && (
         <p className={`mt-2 text-sm text-black/70 ${titleAlign === 'center' ? 'text-center' : ''}`}>

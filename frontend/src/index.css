@@ -23,13 +23,13 @@ body {
 }
 
 :root {
-  --site-header-height: 64px;
+  --site-header-height: 52px;
   --category-nav-height: 36px;
 }
 
 @media (min-width: 640px) {
   :root {
-    --site-header-height: 72px;
+    --site-header-height: 56px;
     --category-nav-height: 40px;
   }
 }
@@ -64,6 +64,16 @@ body {
     @apply inline-flex items-center justify-center rounded-full border border-primary bg-white px-5 text-sm font-semibold text-primary transition hover:bg-black/5;
   }
 
+  /* Consistent top spacing for page titles across the site */
+  .page-shell {
+    @apply px-4 pt-10 pb-10 sm:px-6 lg:px-8;
+  }
+
+  /* Home page: equal space between main content sections (all screen sizes) */
+  .home-sections {
+    @apply flex w-full flex-col gap-10;
+  }
+
   /* 4 per row on desktop; compact cards use a smaller fixed width (height follows 4/5 image ratio) */
   .product-grid {
     container-type: inline-size;
@@ -79,6 +89,33 @@ body {
       width: calc((100cqi - 4 * 1rem) / 6);
       max-width: 100%;
       justify-self: center;
+    }
+  }
+
+  .product-recommendations-scroll {
+    container-type: inline-size;
+    scroll-snap-type: x proximity;
+  }
+
+  .product-recommendations-scroll__item {
+    flex: 0 0 calc((100cqi - 0.75rem) / 2);
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  .product-recommendations-scroll__item .product-card--compact {
+    @apply mx-0 w-full max-w-none;
+  }
+
+  @container (min-width: 640px) {
+    .product-recommendations-scroll__item {
+      flex: 0 0 calc((100cqi - 2rem) / 3);
+    }
+  }
+
+  @container (min-width: 1024px) {
+    .product-recommendations-scroll__item {
+      flex: 0 0 calc((100cqi - 6rem) / 4);
     }
   }
 

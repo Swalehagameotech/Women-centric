@@ -5,8 +5,6 @@ import BestsellerCategoriesSection from '../components/BestsellerCategoriesSecti
 import DiscountDealsSection from '../components/DiscountDealsSection';
 import ExploreEleganceSection from '../components/ExploreEleganceSection';
 import NewLaunchSection from '../components/NewLaunchSection';
-import CategoryImageStrip from '../components/CategoryImageStrip';
-import { fetchCategories } from '../utils/products';
 
 const heroPromoMessage = '50% off on Luxury Bags grab the opportunity';
 const heroPromoVideo =
@@ -141,29 +139,9 @@ function PromiseIcon({ type }) {
   );
 }
 
-const categoriesWithSubcategories = (categories) =>
-  categories.filter(
-    (category) => Array.isArray(category.subcategory) && category.subcategory.length > 0,
-  );
-
 function Home() {
   const promiseSectionRef = useRef(null);
   const [showPromiseSection, setShowPromiseSection] = useState(false);
-  const [navCategories, setNavCategories] = useState([]);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    fetchCategories({ signal: controller.signal })
-      .then((data) => setNavCategories(categoriesWithSubcategories(data)))
-      .catch((err) => {
-        if (err.name !== 'AbortError') {
-          console.error('Failed to load categories:', err);
-        }
-      });
-
-    return () => controller.abort();
-  }, []);
 
   useEffect(() => {
     const section = promiseSectionRef.current;
@@ -208,23 +186,19 @@ function Home() {
         </div>
       </section>
 
-      {navCategories.length > 0 && (
-        <div className="mt-3 md:hidden">
-          <CategoryImageStrip categories={navCategories} />
+      <div className="home-sections mt-10 pb-10">
+        <ExploreEleganceSection />
+        <AutoBannerSlider />
+        <NewLaunchSection />
+        <div className="-mt-4">
+          <BestsellerCategoriesSection />
         </div>
-      )}
 
-      <ExploreEleganceSection />
-      <AutoBannerSlider />
-      <NewLaunchSection />
-      <BestsellerCategoriesSection />
-      <DiscountDealsSection />
+        <DiscountDealsSection />
 
-
-
-      <section ref={promiseSectionRef} className="overflow-hidden bg-white">
+        <section ref={promiseSectionRef} className="overflow-hidden bg-white">
         <div
-          className={`mx-auto max-w-7xl px-4 py-16 transition-all duration-700 ease-out sm:px-6 lg:py-20 ${
+          className={`mx-auto max-w-7xl px-4 transition-all duration-700 ease-out sm:px-6 ${
             showPromiseSection
               ? 'translate-x-0 opacity-100'
               : 'opacity-0 md:translate-x-24'
@@ -269,13 +243,13 @@ function Home() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-20 pt-4 sm:px-6">
+        <section className="mx-auto w-full max-w-6xl px-4 sm:px-6">
         <div className="relative overflow-hidden">
-          <video
+          <img
             className="h-[340px] w-full object-cover sm:h-[420px]"
-            src="https://res.cloudinary.com/dsafvwkrf/video/upload/v1779798972/PixVerse_V6_Image_Text_360P_genrate__video_of__ieffsg.mp4"
+            src="https://res.cloudinary.com/dsafvwkrf/image/upload/v1780316411/79bcf24f-1d22-40a6-8db0-e91b88222de9.png"
             autoPlay
             loop
             muted
@@ -299,7 +273,8 @@ function Home() {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

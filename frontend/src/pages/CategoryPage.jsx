@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import PageEmptyState, { PageTitle } from '../components/PageEmptyState';
 import ProductCard from '../components/ProductCard';
+import ProductsEmptyState from '../components/ProductsEmptyState';
+import ProductsLoader from '../components/ProductsLoader';
 import { NEW_LAUNCH_BADGE_IMAGE } from '../utils/badges';
 import {
   COLLECTION_BY_SLUG,
@@ -76,16 +78,16 @@ function CategoryPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-[1600px] px-4 py-16 text-center text-black/70 sm:px-6">
-        Loading...
+      <div className="page-shell mx-auto max-w-[1600px]">
+        <ProductsLoader variant="page" skeleton label="Loading products…" />
       </div>
     );
   }
 
   if (error || !category) {
     return (
-      <div className="mx-auto max-w-[1600px] px-4 py-16 text-center sm:px-6">
-        <h1 className="font-serif text-3xl text-black">Category not found</h1>
+      <div className="page-shell mx-auto max-w-[1600px] text-center">
+        <PageTitle>Category not found</PageTitle>
         <Link to="/" className="btn-solid mt-6 inline-block">
           Back to home
         </Link>
@@ -128,22 +130,20 @@ function CategoryPage() {
       )}
 
       <div className="pt-6">
-        <PageTitle>{category.name}</PageTitle>
+        
         {activeSubcategory && (
           <p className="mt-2 text-sm text-black/70">{activeSubcategory}</p>
         )}
 
         {products.length === 0 ? (
-          <PageEmptyState
-            message={`There are no products in ${category.name} yet.`}
-            hint="Check back soon or explore other categories from the home page."
-          >
-            <Link to="/" className="btn-solid inline-block">
+          <div className="mt-8 text-center">
+            <ProductsEmptyState className="py-4" />
+            <Link to="/" className="btn-solid mt-2 inline-block">
               Go to Home
             </Link>
-          </PageEmptyState>
+          </div>
         ) : (
-        <div className="product-grid mt-8">
+        <div className="product-grid mt-1">
           {products.map((product) => (
             <ProductCard
               key={product._id}

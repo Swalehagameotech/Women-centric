@@ -2,7 +2,7 @@ import LegalPage from '../components/LegalPage';
 
 function ShippingReturns() {
   return (
-    <LegalPage label="Support" title="Shipping & Returns">
+    <LegalPage title="Shipping & Returns">
       <p>
         <strong className="text-black">Shipping</strong> — We dispatch most orders within 2–4
         business days after payment confirmation. Delivery typically takes 5–10 business days
@@ -25,7 +25,7 @@ function ShippingReturns() {
       </p>
       <p>
         Refunds are processed to your original payment method within 7–10 business days after we
-        receive and inspect the returned item. For help, email hello@lumiere.com or call +91 98765
+        receive and inspect the returned item. For help, email hello@stylebyher.com or call +91 98765
         43210.
       </p>
     </LegalPage>

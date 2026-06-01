@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PageLayout from '../components/PageLayout';
 
 function Contact() {
   const [form, setForm] = useState({
@@ -21,22 +22,16 @@ function Contact() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <div className="max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Contact</p>
-        <h1 className="mt-4 font-serif text-4xl text-black">We&apos;d love to hear from you</h1>
-        <p className="mt-4 text-black/70">
-          Questions about orders, products, or partnerships? Send us a message and we&apos;ll get back
-          to you within 24–48 hours.
-        </p>
-      </div>
-
-      <div className="mt-12 grid gap-10 lg:grid-cols-5">
+    <PageLayout
+      title="We'd love to hear from you"
+      description="Questions about orders, products, or partnerships? Send us a message and we'll get back to you within 24–48 hours."
+    >
+      <div className="mt-8 grid gap-10 lg:grid-cols-5">
         <div className="space-y-6 lg:col-span-2">
           <div className="rounded-2xl border border-primary/15 bg-white p-6 shadow-sm">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-primary">Email</h2>
-            <p className="mt-2 text-black">hello@lumiere.com</p>
-            <p className="text-sm text-black/60">support@lumiere.com</p>
+            <p className="mt-2 text-black">hello@stylebyher.com</p>
+            <p className="text-sm text-black/60">support@stylebyher.com</p>
           </div>
 
           <div className="rounded-2xl border border-primary/15 bg-white p-6 shadow-sm">
@@ -126,7 +121,7 @@ function Contact() {
           </button>
         </form>
       </div>
-    </div>
+    </PageLayout>
   );
 }
 

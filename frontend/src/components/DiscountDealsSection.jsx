@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
+import ProductsEmptyState from './ProductsEmptyState';
+import ProductsLoader from './ProductsLoader';
 import { fetchProducts } from '../utils/products';
 
 const discountBannerDesktop =
@@ -37,15 +39,14 @@ function DiscountDealsSection() {
   }, []);
 
   const homeProducts = products.slice(0, HOME_LIMIT);
-  const hasMore = products.length > HOME_LIMIT;
 
   return (
-    <section className="pb-10 pt-2 sm:pb-12">
-      <Link to="/category/discount" className="block w-full overflow-hidden">
+    <section className="w-full">
+      <Link to="/category/discount" className="block w-full overflow-hidden md:rounded-none">
         <img
           src={discountBannerMobile}
           alt="Special discount deals"
-          className="block h-auto w-full max-w-full transition hover:opacity-95 md:hidden"
+          className="block aspect-[16/9] w-full object-cover object-center transition hover:opacity-95 md:hidden"
         />
         <video
           className="hidden h-auto w-full max-w-full object-cover transition hover:opacity-95 md:block"
@@ -58,25 +59,16 @@ function DiscountDealsSection() {
         />
       </Link>
 
-      <div className="mx-auto mt-6 max-w-[1600px] px-4 sm:mt-8 sm:px-6 md:px-8">
+      <div className="mx-auto mt-4 max-w-[1600px] px-4 sm:mt-8 sm:px-6 md:px-8">
         {loading ? (
-          <p className="text-center text-black/70">Loading products...</p>
+          <ProductsLoader variant="section" label="Loading deals…" />
         ) : homeProducts.length === 0 ? (
-          <p className="text-center text-black/70">No discount products yet.</p>
+          <ProductsEmptyState />
         ) : (
           <div className="product-grid">
             {homeProducts.map((product) => (
-              <ProductCard key={product._id} product={product} compact />
+              <ProductCard key={product._id} product={product} compact priceOnly />
             ))}
-          </div>
-        )}
-
-        {hasMore && (
-          <div className="mt-8 text-center">
-            <Link to="/category/discount" className="btn-solid inline-flex items-center gap-2">
-              View all deals
-              <span aria-hidden="true">→</span>
-            </Link>
           </div>
         )}
       </div>

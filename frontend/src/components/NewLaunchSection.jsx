@@ -1,8 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
+import ProductsEmptyState from './ProductsEmptyState';
+import ProductsLoader from './ProductsLoader';
 import { NEW_LAUNCH_BADGE_IMAGE } from '../utils/badges';
-import { fetchProducts } from '../utils/products';
+import { fetchMixedHomeProducts } from '../utils/products';
+
+const NEW_LAUNCH_MIX = [
+  { category: 'Womens Wear', subcategory: 'Sarees', count: 4, sareesOnly: true },
+  { category: 'Bags', count: 2 },
+  { category: 'Luxury Accessories', count: 2 },
+  { category: 'Luxury Essentials', count: 1 },
+  { category: 'Footwear', count: 1 },
+];
 
 const featuredImageDesktop =
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1779793668/Untitled_1920_x_200_px_1920_x_150_px_1850_x_650_px_1850_x_400_px_1080_x_650_px_640_x_650_px_690_x_650_px_talxpq.png';
@@ -22,7 +32,12 @@ function NewLaunchSection() {
 
     const loadProducts = async () => {
       try {
-        const data = await fetchProducts({ category: 'New Launch', signal: controller.signal });
+        const data = await fetchMixedHomeProducts({
+          signal: controller.signal,
+          primaryCategory: 'New Launch',
+          supplemental: NEW_LAUNCH_MIX,
+          limit: HOME_LIMIT,
+        });
         setProducts(data);
       } catch (error) {
         if (error.name !== 'AbortError') {
@@ -39,7 +54,6 @@ function NewLaunchSection() {
   }, []);
 
   const homeProducts = products.slice(0, HOME_LIMIT);
-  const hasMore = products.length > HOME_LIMIT;
 
   const scrollRow = (direction) => {
     if (!scrollRef.current) return;
@@ -47,13 +61,15 @@ function NewLaunchSection() {
   };
 
   return (
-    <section className="mx-auto max-w-[1600px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-6 md:px-8">
+    <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 md:px-8">
       <div className="mb-6 flex justify-center text-center sm:mb-8">
         <h2 className="font-serif text-2xl font-medium text-black sm:text-3xl md:text-4xl">New Launch</h2>
       </div>
 
       {loading ? (
-        <p className="text-center text-black/70">Loading products...</p>
+        <ProductsLoader variant="section" label="Loading new launches…" />
+      ) : homeProducts.length === 0 ? (
+        <ProductsEmptyState />
       ) : (
         <>
           {/* Mobile: featured image + 2 products visible with horizontal scroll */}
@@ -67,10 +83,7 @@ function NewLaunchSection() {
               />
             </Link>
 
-            {homeProducts.length === 0 ? (
-              <p className="mt-6 text-center text-black/70">No products yet.</p>
-            ) : (
-              <div className="mt-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+            <div className="mt-4 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
                 <div className="flex gap-2">
                   {homeProducts.map((product) => (
                     <div
@@ -82,12 +95,12 @@ function NewLaunchSection() {
                         featured
                         showNewLaunchBadge
                         newLaunchBadgeImage={NEW_LAUNCH_BADGE_IMAGE}
+                        priceOnly
                       />
                     </div>
                   ))}
                 </div>
               </div>
-            )}
           </div>
 
           {/* Desktop / tablet: horizontal row with tall featured image */}
@@ -124,36 +137,23 @@ function NewLaunchSection() {
                   />
                 </Link>
 
-                {homeProducts.length === 0 ? (
-                  <p className="flex h-[260px] w-[200px] shrink-0 items-center justify-center text-black/70">
-                    No products yet.
-                  </p>
-                ) : (
-                  homeProducts.map((product) => (
-                    <div key={product._id} className="w-[260px] shrink-0">
-                      <ProductCard
-                        product={product}
-                        featured
-                        showNewLaunchBadge
-                        newLaunchBadgeImage={NEW_LAUNCH_BADGE_IMAGE}
-                      />
-                    </div>
-                  ))
-                )}
+                {homeProducts.map((product) => (
+                  <div key={product._id} className="w-[260px] shrink-0">
+                    <ProductCard
+                      product={product}
+                      featured
+                      showNewLaunchBadge
+                      newLaunchBadgeImage={NEW_LAUNCH_BADGE_IMAGE}
+                      priceOnly
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </>
       )}
 
-      {hasMore && (
-        <div className="mt-6 text-center sm:mt-8">
-          <Link to="/category/new-launch" className="btn-solid inline-flex items-center gap-2">
-            View all
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
-      )}
     </section>
   );
 }

@@ -27,8 +27,8 @@ function MobileCatalogSheet({ open, onClose, categories }) {
         aria-label="Close catalog"
       />
 
-      <div className="absolute bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 max-h-[min(70vh,520px)] overflow-hidden rounded-t-2xl bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
+      <div className="absolute bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 flex h-[58vh] max-h-[58dvh] flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-black/10 px-4 py-3">
           <h2 className="text-base font-semibold text-black">All Categories</h2>
           <button
             type="button"
@@ -40,7 +40,7 @@ function MobileCatalogSheet({ open, onClose, categories }) {
           </button>
         </div>
 
-        <div className="overflow-y-auto overscroll-contain px-4 py-3 pb-4">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-3 pb-6 [-webkit-overflow-scrolling:touch]">
           {categories.length === 0 ? (
             <p className="py-6 text-center text-sm text-black/60">No categories found.</p>
           ) : (
@@ -68,28 +68,32 @@ function MobileCatalogSheet({ open, onClose, categories }) {
                     </Link>
 
                     {category.subcategory?.length > 0 && (
-                      <ul className="flex flex-wrap gap-2 border-t border-black/5 px-3 py-2">
-                        <li>
-                          <Link
-                            to={`/category/${slug}`}
-                            onClick={onClose}
-                            className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-white"
-                          >
-                            All
-                          </Link>
-                        </li>
-                        {category.subcategory.map((sub) => (
-                          <li key={sub}>
-                            <Link
-                              to={`/category/${slug}?subcategory=${encodeURIComponent(sub)}`}
-                              onClick={onClose}
-                              className="rounded-full border border-primary/30 px-3 py-1 text-xs font-medium text-primary"
-                            >
-                              {sub}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
+                      <div className="border-t border-black/5 px-3 py-2">
+                        <div className="-mx-3 overflow-x-auto overscroll-x-contain px-3 pb-0.5 scrollbar-hide [touch-action:pan-x]">
+                          <ul className="flex w-max flex-nowrap items-center gap-2">
+                            <li className="shrink-0">
+                              <Link
+                                to={`/category/${slug}`}
+                                onClick={onClose}
+                                className="inline-block whitespace-nowrap rounded-full bg-primary px-3 py-1 text-xs font-medium text-white"
+                              >
+                                All
+                              </Link>
+                            </li>
+                            {category.subcategory.map((sub) => (
+                              <li key={sub} className="shrink-0">
+                                <Link
+                                  to={`/category/${slug}?subcategory=${encodeURIComponent(sub)}`}
+                                  onClick={onClose}
+                                  className="inline-block whitespace-nowrap rounded-full border border-primary/30 px-3 py-1 text-xs font-medium text-primary"
+                                >
+                                  {sub}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     )}
                   </li>
                 );

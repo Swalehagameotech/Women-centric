@@ -83,7 +83,7 @@ function MobileBottomBar({ catalogOpen, onCatalogToggle }) {
               </span>
             )}
           </span>
-          <span>Cart</span>
+          <span>Basket</span>
         </Link>
 
         <button type="button" onClick={handleAccountClick} className={itemClass(isAccount)}>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import PageEmptyState from '../components/PageEmptyState';
 import PageLayout from '../components/PageLayout';
 import ProductCard from '../components/ProductCard';
+import ProductsEmptyState from '../components/ProductsEmptyState';
 import { useWishlist } from '../context/WishlistContext';
 
 function Favourites() {
@@ -17,15 +17,12 @@ function Favourites() {
       }
     >
       {items.length === 0 ? (
-        <PageEmptyState
-          message="You don't have any products in your favourites yet."
-          hint="Tap the heart on any product to save it here for later."
-          showExploreLinks={false}
-        >
-          <Link to="/" className="btn-solid inline-block">
+        <div className="mt-4 text-center">
+          <ProductsEmptyState className="py-6" />
+          <Link to="/" className="btn-solid mt-2 inline-block">
             Discover products
           </Link>
-        </PageEmptyState>
+        </div>
       ) : (
         <div className="product-grid mt-8">
           {items.map((product) => (

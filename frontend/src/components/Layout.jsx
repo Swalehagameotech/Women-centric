@@ -7,6 +7,7 @@ import Footer from './Footer';
 import MobileBottomBar from './MobileBottomBar';
 import MobileCatalogSheet from './MobileCatalogSheet';
 import { getApiBaseUrl } from '../config/env';
+import { filterShopCategories } from '../utils/products';
 
 const categoriesWithSubcategories = (categories) =>
   categories.filter(
@@ -124,7 +125,7 @@ function Layout() {
       <MobileCatalogSheet
         open={catalogOpen}
         onClose={() => setCatalogOpen(false)}
-        categories={allCategories}
+        categories={filterShopCategories(allCategories)}
       />
     </div>
   );

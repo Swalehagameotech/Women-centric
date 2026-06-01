@@ -24,6 +24,8 @@ function ProductCard({
   newLaunchBadgeImage,
   compact = false,
   featured = false,
+  hideAddToCart = false,
+  priceOnly = false,
 }) {
   const navigate = useNavigate();
   const { requireAuth } = useAuth();
@@ -108,7 +110,7 @@ function ProductCard({
           }`}
         >
           <span className="font-semibold text-black">{formatPrice(product.discounted_price)}</span>
-          {hasDiscount && (
+          {!priceOnly && hasDiscount && (
             <>
               <span className="text-black/45 line-through">{formatPrice(product.original_price)}</span>
               {discountLabel && (
@@ -120,15 +122,17 @@ function ProductCard({
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          className={`mt-2 w-full border border-black/80 bg-white font-normal text-black transition hover:bg-black/5 ${
-            isCompact ? 'py-1.5 text-[10px] sm:py-2 sm:text-xs' : 'py-2 text-sm'
-          }`}
-        >
-          Add to Cart
-        </button>
+        {!hideAddToCart && (
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className={`mt-2 w-full border border-black/80 bg-white font-normal text-black transition hover:bg-black/5 ${
+              isCompact ? 'py-1.5 text-[10px] sm:py-2 sm:text-xs' : 'py-2 text-sm'
+            }`}
+          >
+            Add to Basket
+          </button>
+        )}
       </div>
     </article>
   );

@@ -16,6 +16,12 @@ export const COLLECTION_BY_SLUG = {
 
 const COLLECTION_CATEGORY_NAMES = new Set(Object.values(COLLECTION_BY_SLUG));
 
+export const isCollectionCategory = (category) =>
+  COLLECTION_CATEGORY_NAMES.has(category?.name);
+
+export const filterShopCategories = (categories) =>
+  (Array.isArray(categories) ? categories : []).filter((category) => !isCollectionCategory(category));
+
 export const getPrimaryCategory = (categories = []) =>
   categories.find((name) => !COLLECTION_CATEGORY_NAMES.has(name)) || categories[0] || null;
 
@@ -92,6 +98,101 @@ export const shuffleProducts = (products) => {
   }
 
   return shuffled;
+};
+
+export const mergeProductLists = (...lists) => {
+  const merged = [];
+  const seen = new Set();
+
+  for (const list of lists) {
+    for (const product of list) {
+      if (!seen.has(product._id)) {
+        merged.push(product);
+        seen.add(product._id);
+      }
+    }
+  }
+
+  return merged;
+};
+
+export const isSareeProduct = (product) => {
+  const subcategory = (product?.subcategory || '').toLowerCase();
+  return subcategory.includes('saree');
+};
+
+/** Home sections: reserve slots for bags, accessories, perfume, etc., then fill from primary collection. */
+export const buildMixedHomeProducts = (primaryProducts, supplementalBuckets, limit) => {
+  const picked = [];
+  const seen = new Set();
+
+  const tryAdd = (product) => {
+    if (!product?._id || seen.has(product._id) || picked.length >= limit) {
+      return false;
+    }
+    seen.add(product._id);
+    picked.push(product);
+    return true;
+  };
+
+  const takeFrom = (products, count, { sareesOnly = false } = {}) => {
+    const list = Array.isArray(products) ? products : [];
+    const sarees = shuffleProducts(list.filter(isSareeProduct));
+    const nonSaree = shuffleProducts(list.filter((item) => !isSareeProduct(item)));
+    const pool = sareesOnly ? [...sarees, ...nonSaree] : [...nonSaree, ...sarees];
+    let taken = 0;
+
+    for (const product of pool) {
+      if (taken >= count) break;
+      if (tryAdd(product)) taken += 1;
+    }
+
+    return taken;
+  };
+
+  for (const { products, count, sareesOnly } of supplementalBuckets) {
+    takeFrom(products, count, { sareesOnly });
+  }
+
+  const primary = Array.isArray(primaryProducts) ? primaryProducts : [];
+  const primaryNonSaree = shuffleProducts(primary.filter((item) => !isSareeProduct(item)));
+  const primarySaree = shuffleProducts(primary.filter(isSareeProduct));
+
+  for (const product of [...primaryNonSaree, ...primarySaree]) {
+    if (picked.length >= limit) break;
+    tryAdd(product);
+  }
+
+  return picked;
+};
+
+export const fetchMixedHomeProducts = async ({
+  signal,
+  primaryCategory,
+  supplemental = [],
+  limit = 10,
+}) => {
+  const [primary, ...supplementalLists] = await Promise.all([
+    fetchProducts({ category: primaryCategory, signal }),
+    ...supplemental.map(async ({ category, subcategory, sareesOnly }) => {
+      let products = await fetchProducts({ category, subcategory, signal });
+
+      if (sareesOnly && products.length === 0) {
+        const fromCategory = await fetchProducts({ category, signal });
+        products = fromCategory.filter(isSareeProduct);
+      }
+
+      return products;
+    }),
+  ]);
+
+  const buckets = supplemental.map((entry, index) => ({
+    products: supplementalLists[index],
+    count: entry.count,
+    sareesOnly: entry.sareesOnly,
+  }));
+
+  return buildMixedHomeProducts(primary, buckets, limit);
 };
 
 export const groupProductsBySubcategory = (products, subcategoryOrder = []) => {

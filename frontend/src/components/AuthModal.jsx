@@ -188,7 +188,7 @@ function AuthModal({ isOpen, onClose, onSuccess, initialMode = 'login' }) {
             <h2 id="auth-modal-title" className="mt-2 font-serif text-2xl text-black sm:text-3xl">
               Sign in
             </h2>
-            <p className="mt-1 text-sm text-black/70">Access your Lumière account</p>
+            <p className="mt-1 text-sm text-black/70">Access your Style By Her account</p>
           </div>
         )}
 

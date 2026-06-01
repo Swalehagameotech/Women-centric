@@ -154,7 +154,7 @@ function OrderDetail() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center text-black/70 sm:px-6">
+      <div className="page-shell mx-auto max-w-5xl text-center text-black/70">
         Loading order…
       </div>
     );
@@ -162,7 +162,7 @@ function OrderDetail() {
 
   if (error || !order) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
+      <div className="page-shell mx-auto max-w-5xl text-center">
         <p className="text-red-600">{error || 'Order not found'}</p>
         <Link to="/orders" className="btn-solid mt-6 inline-block">
           Back to orders
