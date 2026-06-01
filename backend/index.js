@@ -15,20 +15,41 @@ import adminRoutes from './routes/admin.routes.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const parseOriginList = (value) =>
+  (value || '')
+    .split(',')
+    .map((entry) => entry.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  ...parseOriginList(process.env.FRONTEND_URL),
+  ...parseOriginList(process.env.ALLOWED_ORIGINS),
   'http://localhost:5173',
   'http://localhost:4173',
-].filter(Boolean);
+];
+
+/** Matches https://women-centric-6.onrender.com and similar Render static URLs */
+const isWomenCentricRenderFrontend = (origin) =>
+  /^https:\/\/women-centric[\w.-]*\.onrender\.com$/i.test(origin);
+
+const isOriginAllowed = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (process.env.NODE_ENV === 'production' && isWomenCentricRenderFrontend(origin)) {
+    return true;
+  }
+  return false;
+};
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (isOriginAllowed(origin)) {
         callback(null, true);
         return;
       }
-      callback(new Error(`CORS blocked for origin: ${origin}`));
+      console.warn(`CORS blocked for origin: ${origin}`);
+      callback(null, false);
     },
   }),
 );
