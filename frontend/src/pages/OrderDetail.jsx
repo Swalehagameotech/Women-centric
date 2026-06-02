@@ -52,44 +52,43 @@ function SectionLabel({ children }) {
 function ProgressStep({ step, index, state, timestamp }) {
   const isLast = index === ORDER_PROGRESS_STEPS.length - 1;
   const isCancelledStep = step.key === 'cancelled' && state === 'active';
+  const isDone = state === 'completed' || state === 'active';
 
   return (
-    <div className="flex min-w-0 flex-1 items-start">
-      <div className="flex w-full min-w-0 flex-col items-center">
-        <div className="flex w-full items-center">
-          <div
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold sm:h-10 sm:w-10 ${
-              isCancelledStep
-                ? 'bg-red-500 text-white'
-                : state === 'completed' || state === 'active'
-                  ? 'bg-emerald-500 text-white'
-                  : 'border-2 border-gray-300 bg-white text-gray-500'
-            }`}
-          >
-            {state === 'completed' || state === 'active' ? (
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            ) : (
-              index + 1
-            )}
-          </div>
-          {!isLast && (
-            <div
-              className={`mx-1 h-0.5 min-w-[12px] flex-1 sm:mx-2 ${
-                state === 'completed' ? 'bg-emerald-400' : 'bg-gray-200'
-              }`}
-            />
+    <div className="relative flex min-w-0 flex-1 items-start">
+      <div className="relative flex w-full min-w-0 flex-col items-center">
+        <div
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold sm:h-10 sm:w-10 ${
+            isCancelledStep
+              ? 'bg-red-500 text-white'
+              : isDone
+                ? 'bg-primary text-white'
+                : 'border-2 border-gray-300 bg-white text-gray-500'
+          }`}
+        >
+          {isDone ? (
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            index + 1
           )}
         </div>
+        {!isLast && (
+          <div
+            className={`absolute left-[calc(50%+18px)] top-[18px] h-0.5 w-[calc(150%-36px)] sm:left-[calc(50%+20px)] sm:top-5 sm:w-[calc(150%-40px)] ${
+              state === 'completed' ? 'bg-primary/60' : 'bg-gray-200'
+            }`}
+          />
+        )}
         <p
-          className={`mt-2 text-center text-[11px] font-medium sm:text-xs ${
-            state === 'active' || state === 'completed' ? 'text-gray-900' : 'text-gray-500'
+          className={`mt-2 w-full text-center text-[11px] font-medium sm:text-xs ${
+            isDone ? 'text-gray-900' : 'text-gray-500'
           }`}
         >
           {step.label}
         </p>
-        {timestamp && (state === 'active' || state === 'completed') && (
+        {timestamp && isDone && (
           <p className="mt-0.5 hidden text-center text-[10px] text-gray-500 sm:block">
             {timestamp}
           </p>
@@ -175,6 +174,7 @@ function OrderDetail() {
   const cancellable = canUserCancelOrder(order.status);
   const normalizedStatus = normalizeOrderStatus(order.status);
   const placedAt = formatOrderDateTime(order.createdAt);
+  const latestStatusAt = formatOrderDateTime(order.updatedAt);
   const statusLabel = getOrderStatusLabel(order.status);
   const paymentLabel = getPaymentStatusLabel(order.paymentStatus).toLowerCase();
 
@@ -230,10 +230,14 @@ function OrderDetail() {
           <div className="flex min-w-[520px] items-start px-1 sm:min-w-0">
             {ORDER_PROGRESS_STEPS.map((step, index) => {
               const state = getOrderProgressStepState(order.status, step.key);
-              const showTime =
+              const showPlacedTime =
                 step.key === 'placed' &&
                 (state === 'active' || state === 'completed') &&
                 normalizedStatus !== 'cancelled';
+              const isCurrentStep = step.key === normalizedStatus;
+              const showCurrentStepTime =
+                isCurrentStep && ['processing', 'shipped', 'delivered', 'cancelled'].includes(step.key);
+              const timestamp = showPlacedTime ? placedAt : showCurrentStepTime ? latestStatusAt : null;
 
               return (
                 <ProgressStep
@@ -241,7 +245,7 @@ function OrderDetail() {
                   step={step}
                   index={index}
                   state={state}
-                  timestamp={showTime ? placedAt : null}
+                  timestamp={timestamp}
                 />
               );
             })}

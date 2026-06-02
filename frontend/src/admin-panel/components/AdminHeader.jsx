@@ -1,6 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 function AdminHeader({ title }) {
+  const navigate = useNavigate();
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    signOut();
+    navigate('/admin/login', { replace: true });
+  };
+
   return (
     <header className="flex shrink-0 items-center justify-between border-b border-primary/10 bg-white px-4 py-4 shadow-sm sm:px-6 lg:px-8">
       <h1 className="font-serif text-xl font-medium text-[#1f1419] sm:text-2xl">{title}</h1>
@@ -11,8 +20,8 @@ function AdminHeader({ title }) {
         >
           ← Back to Site
         </Link>
-        <button
-          type="button"
+        <Link
+          to="/admin/account"
           className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-2 text-xs font-medium text-primary transition hover:bg-primary/10 sm:px-4 sm:text-sm"
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white">
@@ -21,6 +30,13 @@ function AdminHeader({ title }) {
             </svg>
           </span>
           <span className="hidden sm:inline">Admin</span>
+        </Link>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="rounded-full border border-red-200 bg-white px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 sm:px-4 sm:text-sm"
+        >
+          Logout
         </button>
       </div>
     </header>

@@ -56,7 +56,7 @@ export const createProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { category, subcategory, brand, search } = req.query;
+    const { category, subcategory, brand, search, page, limit } = req.query;
     const filter = {};
 
     if (category) {
@@ -84,11 +84,26 @@ export const getAllProducts = async (req, res) => {
       ];
     }
 
-    const products = await Product.find(filter).sort({ createdAt: -1 });
+    const pageNumber = Math.max(1, Number.parseInt(page, 10) || 1);
+    const pageSize = Math.max(1, Number.parseInt(limit, 10) || 0);
+    const usePagination = Number.isFinite(pageNumber) && pageSize > 0 && (page || limit);
+
+    const baseQuery = Product.find(filter).sort({ createdAt: -1 });
+    const products = usePagination
+      ? await baseQuery.skip((pageNumber - 1) * pageSize).limit(pageSize)
+      : await baseQuery;
+    const total = usePagination ? await Product.countDocuments(filter) : products.length;
+    const totalPages = usePagination ? Math.max(1, Math.ceil(total / pageSize)) : 1;
 
     res.status(200).json({
       success: true,
       count: products.length,
+      total,
+      page: usePagination ? pageNumber : 1,
+      limit: usePagination ? pageSize : products.length,
+      totalPages,
+      hasNextPage: usePagination ? pageNumber < totalPages : false,
+      hasPrevPage: usePagination ? pageNumber > 1 : false,
       data: products,
     });
   } catch (error) {

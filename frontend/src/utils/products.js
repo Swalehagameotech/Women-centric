@@ -14,6 +14,9 @@ export const COLLECTION_BY_SLUG = {
   discount: 'Discount',
 };
 
+// Update this to 70 later when your discount campaign changes.
+export const DISCOUNT_PROMO_PERCENT = 50;
+
 const COLLECTION_CATEGORY_NAMES = new Set(Object.values(COLLECTION_BY_SLUG));
 
 export const isCollectionCategory = (category) =>
@@ -47,6 +50,24 @@ export const formatPrice = (amount) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+
+export const applyFixedDiscountPercent = (product, percent) => {
+  const safePercent = Number(percent);
+  const original = Number(product?.original_price ?? product?.discounted_price ?? 0);
+
+  if (!Number.isFinite(safePercent) || !Number.isFinite(original)) {
+    return product;
+  }
+
+  const discounted = Math.round((original * (100 - safePercent)) / 100);
+
+  return {
+    ...product,
+    original_price: original,
+    discounted_price: discounted,
+    discount_percent: safePercent,
+  };
+};
 
 export const fetchProductById = async (id, { signal } = {}) => {
   const response = await fetch(`${getApiBaseUrl()}/api/products/${id}`, { signal });

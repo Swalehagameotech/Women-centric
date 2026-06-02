@@ -25,7 +25,7 @@ export function getPaymentStatusLabel(status) {
 
 /** User may cancel only before shipment */
 export function canUserCancelOrder(status) {
-  return ['placed', 'pending', 'processing'].includes(status);
+  return ['placed', 'pending'].includes(status);
 }
 
 export function orderStatusBadgeClass(status) {

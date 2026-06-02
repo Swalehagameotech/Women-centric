@@ -10,12 +10,14 @@ const PAGE_TITLES = {
   '/admin/categories/add': 'Add Category',
   '/admin/orders': 'Orders',
   '/admin/users': 'Users',
+  '/admin/account': 'Admin Account Settings',
 };
 
 function resolveTitle(pathname) {
   if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
   if (pathname.startsWith('/admin/products/edit/')) return 'Edit Product';
   if (pathname.startsWith('/admin/categories/edit/')) return 'Edit Category';
+  if (pathname.startsWith('/admin/orders/')) return 'Order Detail';
   return 'Admin';
 }
 

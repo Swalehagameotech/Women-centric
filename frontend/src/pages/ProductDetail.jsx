@@ -7,6 +7,8 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import {
+  applyFixedDiscountPercent,
+  DISCOUNT_PROMO_PERCENT,
   fetchProductById,
   fetchProducts,
   formatPrice,
@@ -141,15 +143,23 @@ function ProductDetail() {
     );
   }
 
-  const image = product.images?.[0];
+  const isDiscountCollectionProduct = Array.isArray(product.categories)
+    ? product.categories.some((category) => String(category).toLowerCase() === 'discount')
+    : false;
+  const displayProduct = isDiscountCollectionProduct
+    ? applyFixedDiscountPercent(product, DISCOUNT_PROMO_PERCENT)
+    : product;
+
+  const image = displayProduct.images?.[0];
   const hasDiscount =
-    product.discount_percent > 0 && product.original_price > product.discounted_price;
+    displayProduct.discount_percent > 0 &&
+    displayProduct.original_price > displayProduct.discounted_price;
   const isFavourite = isInWishlist(product._id);
-  const displayBrand = product.brand?.trim() || product.name;
+  const displayBrand = displayProduct.brand?.trim() || displayProduct.name;
 
   const handleAddToBag = () => {
     requireAuth(() => {
-      addItem(product, quantity);
+      addItem(displayProduct, quantity);
     });
   };
 
@@ -158,7 +168,7 @@ function ProductDetail() {
       navigate('/checkout', {
         state: {
           buyNow: {
-            product,
+            product: displayProduct,
             quantity,
           },
         },
@@ -192,17 +202,17 @@ function ProductDetail() {
 
         <div className="flex flex-col font-medium text-black">
           <h1 className="text-2xl font-bold text-black sm:text-3xl">{displayBrand}</h1>
-          {product.brand?.trim() && product.name !== displayBrand && (
-            <p className="mt-2 text-base font-semibold text-black/80">{product.name}</p>
+          {displayProduct.brand?.trim() && displayProduct.name !== displayBrand && (
+            <p className="mt-2 text-base font-semibold text-black/80">{displayProduct.name}</p>
           )}
 
           <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
             <span className="text-xl font-bold text-black">
-              {formatPrice(product.discounted_price)}
+              {formatPrice(displayProduct.discounted_price)}
             </span>
             {hasDiscount && (
               <span className="text-lg font-semibold text-black/45 line-through">
-                {formatPrice(product.original_price)}
+                {formatPrice(displayProduct.original_price)}
               </span>
             )}
           </div>
@@ -212,7 +222,7 @@ function ProductDetail() {
               Description
             </h2>
             <p className="mt-3 text-sm font-medium leading-relaxed text-black/80">
-              {product.description}
+              {displayProduct.description}
             </p>
           </section>
 

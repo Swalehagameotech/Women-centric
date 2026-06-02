@@ -6,7 +6,9 @@ import ProductsEmptyState from '../components/ProductsEmptyState';
 import ProductsLoader from '../components/ProductsLoader';
 import { NEW_LAUNCH_BADGE_IMAGE } from '../utils/badges';
 import {
+  applyFixedDiscountPercent,
   COLLECTION_BY_SLUG,
+  DISCOUNT_PROMO_PERCENT,
   fetchCategories,
   fetchProducts,
   resolveCategoryFromSlug,
@@ -52,7 +54,14 @@ function CategoryPage() {
           signal: controller.signal,
         });
 
-        setProducts(shuffleProducts(categoryProducts));
+        const displayProducts =
+          slug === 'discount'
+            ? categoryProducts.map((product) =>
+                applyFixedDiscountPercent(product, DISCOUNT_PROMO_PERCENT),
+              )
+            : categoryProducts;
+
+        setProducts(shuffleProducts(displayProducts));
       } catch (err) {
         if (err.name !== 'AbortError') {
           setError(err.message || 'Failed to load category');
@@ -130,10 +139,7 @@ function CategoryPage() {
       )}
 
       <div className="pt-6">
-        
-        {activeSubcategory && (
-          <p className="mt-2 text-sm text-black/70">{activeSubcategory}</p>
-        )}
+      
 
         {products.length === 0 ? (
           <div className="mt-8 text-center">

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import ProductsEmptyState from './ProductsEmptyState';
 import ProductsLoader from './ProductsLoader';
-import { fetchProducts } from '../utils/products';
+import { applyFixedDiscountPercent, DISCOUNT_PROMO_PERCENT, fetchProducts } from '../utils/products';
 
 const discountBannerDesktop =
   'https://res.cloudinary.com/dsafvwkrf/video/upload/v1780137922/Untitled_1920_x_200_px_1920_x_150_px_1850_x_650_px_1850_x_350_px_1_hmxsuh.mp4';
@@ -38,7 +38,9 @@ function DiscountDealsSection() {
     return () => controller.abort();
   }, []);
 
-  const homeProducts = products.slice(0, HOME_LIMIT);
+  const homeProducts = products
+    .map((product) => applyFixedDiscountPercent(product, DISCOUNT_PROMO_PERCENT))
+    .slice(0, HOME_LIMIT);
 
   return (
     <section className="w-full">

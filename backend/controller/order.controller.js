@@ -3,10 +3,22 @@ import Order from '../model/order.js';
 import Address from '../model/address.js';
 import Product from '../model/product.js';
 
-const generateOrderNumber = () => {
-  const timePart = Date.now().toString(36).toUpperCase();
-  const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
-  return `SBH-${timePart}-${randomPart}`;
+const generateEightDigitOrderNumber = () =>
+  String(Math.floor(10000000 + Math.random() * 90000000));
+
+const generateOrderNumber = async () => {
+  let attempts = 0;
+
+  while (attempts < 10) {
+    const candidate = generateEightDigitOrderNumber();
+    // Keep order number unique even with random numeric generation.
+    // eslint-disable-next-line no-await-in-loop
+    const exists = await Order.exists({ orderNumber: candidate });
+    if (!exists) return candidate;
+    attempts += 1;
+  }
+
+  throw new Error('Unable to generate a unique order number');
 };
 
 const buildShippingSnapshot = (address) => ({
@@ -86,7 +98,7 @@ export const createOrder = async (req, res) => {
 
     const order = await Order.create({
       user: req.user._id,
-      orderNumber: generateOrderNumber(),
+      orderNumber: await generateOrderNumber(),
       items: orderItems,
       shippingAddress: buildShippingSnapshot(address),
       address: address._id,

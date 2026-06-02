@@ -20,6 +20,7 @@ const sendAuthResponse = (user, res, statusCode, message) => {
       name: user.name,
       email: user.email,
       phone: user.phone || '',
+      role: user.role || 'user',
     },
   });
 };
@@ -129,6 +130,7 @@ export const getMe = async (req, res) => {
       name: req.user.name,
       email: req.user.email,
       phone: req.user.phone || '',
+      role: req.user.role || 'user',
     },
   });
 };
@@ -187,6 +189,7 @@ export const updateProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone || '',
+        role: user.role || 'user',
       },
     });
   } catch (error) {

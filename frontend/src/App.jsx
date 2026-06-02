@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
+import AdminRoute from './components/AdminRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -21,6 +22,7 @@ import OrderDetail from './pages/OrderDetail';
 import Checkout from './pages/Checkout';
 import Search from './pages/Search';
 import AdminLayout from './admin-panel/AdminLayout';
+import AdminLogin from './admin-panel/pages/AdminLogin';
 import Dashboard from './admin-panel/pages/Dashboard';
 import AllProducts from './admin-panel/pages/products/AllProducts';
 import AddProduct from './admin-panel/pages/products/AddProduct';
@@ -30,6 +32,8 @@ import AddCategory from './admin-panel/pages/categories/AddCategory';
 import EditCategory from './admin-panel/pages/categories/EditCategory';
 import AdminOrders from './admin-panel/pages/Orders';
 import AdminUsers from './admin-panel/pages/Users';
+import AdminOrderDetail from './admin-panel/pages/OrderDetail';
+import AdminAccountSettings from './admin-panel/pages/AccountSettings';
 
 function App() {
   return (
@@ -38,7 +42,15 @@ function App() {
         <WishlistProvider>
           <ScrollToTop />
           <Routes>
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminLayout />
+                </AdminRoute>
+              }
+            >
               <Route index element={<Dashboard />} />
               <Route path="products" element={<AllProducts />} />
               <Route path="products/add" element={<AddProduct />} />
@@ -47,7 +59,9 @@ function App() {
               <Route path="categories/add" element={<AddCategory />} />
               <Route path="categories/edit/:id" element={<EditCategory />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="orders/:id" element={<AdminOrderDetail />} />
               <Route path="users" element={<AdminUsers />} />
+              <Route path="account" element={<AdminAccountSettings />} />
             </Route>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />

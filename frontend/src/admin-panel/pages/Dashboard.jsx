@@ -73,7 +73,13 @@ function Dashboard() {
         setTodayOrders(today.length);
         setTodayPending(today.filter((o) => o.status === 'pending').length);
         setTodayDelivered(today.filter((o) => o.status === 'delivered').length);
-        setTodayCanceled(today.filter((o) => o.status === 'cancelled').length);
+        setTodayCanceled(
+          orders.filter(
+            (o) =>
+              (o.status === 'cancelled' || o.status === 'canceled') &&
+              isToday(o.updatedAt || o.createdAt),
+          ).length,
+        );
       })
       .catch(() => {});
   }, []);
@@ -82,22 +88,7 @@ function Dashboard() {
     { label: "Today's Orders", value: String(todayOrders), iconBg: 'bg-violet-100', iconColor: 'text-violet-600', icon: 'orders' },
     { label: "Today's Pending", value: String(todayPending), iconBg: 'bg-amber-100', iconColor: 'text-amber-600', icon: 'pending' },
     { label: "Today's Delivered", value: String(todayDelivered), iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', icon: 'delivered' },
-    { label: "Today's Canceled", value: String(todayCanceled), iconBg: 'bg-red-100', iconColor: 'text-red-500', icon: 'canceled' },
-  ];
-
-  const monthlyBars = [
-    { month: 'Jan', height: '45%' },
-    { month: 'Feb', height: '62%' },
-    { month: 'Mar', height: '38%' },
-    { month: 'Apr', height: '78%' },
-    { month: 'May', height: '55%' },
-    { month: 'Jun', height: '90%' },
-    { month: 'Jul', height: '48%' },
-    { month: 'Aug', height: '70%' },
-    { month: 'Sep', height: '58%' },
-    { month: 'Oct', height: '82%' },
-    { month: 'Nov', height: '65%' },
-    { month: 'Dec', height: '72%' },
+    { label: "Today's Cancelled Orders", value: String(todayCanceled), iconBg: 'bg-red-100', iconColor: 'text-red-500', icon: 'canceled' },
   ];
 
   return (
@@ -148,29 +139,6 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-black/8 bg-white p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold text-[#1a1d2e]">Monthly Sales</h2>
-          <select
-            className="rounded-lg border border-black/15 bg-white px-3 py-2 text-sm text-[#1a1d2e] outline-none focus:border-[#7c3aed]"
-            defaultValue="2026"
-          >
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-          </select>
-        </div>
-        <div className="mt-8 flex h-56 items-end justify-between gap-2 border-b border-black/10 pb-2">
-          {monthlyBars.map((bar) => (
-            <div key={bar.month} className="flex flex-1 flex-col items-center gap-2">
-              <div
-                className="w-full max-w-[40px] rounded-t-md bg-[#7c3aed]"
-                style={{ height: bar.height }}
-              />
-              <span className="text-[10px] text-black/45 sm:text-xs">{bar.month}</span>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
