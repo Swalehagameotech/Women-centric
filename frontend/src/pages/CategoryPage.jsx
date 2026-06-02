@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { useCategoryFilter } from '../context/CategoryFilterContext';
 import { PageTitle } from '../components/PageEmptyState';
 import ProductCard from '../components/ProductCard';
 import ProductsEmptyState from '../components/ProductsEmptyState';
@@ -16,71 +17,17 @@ import {
   shuffleProducts,
 } from '../utils/products';
 
-function FilterDotsIcon() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <circle cx="12" cy="5" r="1.75" />
-      <circle cx="12" cy="12" r="1.75" />
-      <circle cx="12" cy="19" r="1.75" />
-    </svg>
-  );
-}
-
-function PriceFilterControls({ priceBounds, priceMax, setPriceMax, onDone }) {
-  return (
-    <div className="space-y-3">
-      <p className="text-xs text-black/55">
-        Min {formatPrice(priceBounds.min)} – Max {formatPrice(Number(priceMax) || priceBounds.max)}
-      </p>
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="text-sm">
-          <span className="font-medium text-black/80">Min price</span>
-          <p className="mt-1 rounded-lg border border-black/10 bg-black/[0.03] px-3 py-2 font-medium">
-            {formatPrice(priceBounds.min)}
-          </p>
-        </div>
-        <label className="block text-sm">
-          <span className="font-medium text-black/80">Max price (₹)</span>
-          <input
-            type="number"
-            min={priceBounds.min}
-            max={priceBounds.max}
-            value={priceMax}
-            onChange={(e) => setPriceMax(e.target.value)}
-            className="mt-1 w-full min-w-[120px] rounded-lg border border-black/15 px-3 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-          />
-        </label>
-      </div>
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => setPriceMax(String(priceBounds.max))}
-          className="flex-1 rounded-full border border-primary/30 py-2 text-sm font-medium text-primary hover:bg-primary/5"
-        >
-          Reset
-        </button>
-        {onDone && (
-          <button type="button" onClick={onDone} className="btn-solid flex-1 py-2 text-sm">
-            Apply
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function CategoryPage() {
   const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeSubcategory = searchParams.get('subcategory') || '';
+  const { priceMax, setPriceMax, setCategoryFilter, clearCategoryFilter, resetPriceMax } =
+    useCategoryFilter();
 
   const [category, setCategory] = useState(null);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [priceMax, setPriceMax] = useState('');
-  const [filterOpen, setFilterOpen] = useState(false);
-  const filterMenuRef = useRef(null);
 
   const isNewLaunchPage = slug === 'new-launch';
   const isCollectionPage = Boolean(COLLECTION_BY_SLUG[slug]);
@@ -147,11 +94,13 @@ function CategoryPage() {
 
   useEffect(() => {
     if (!products.length) {
-      setPriceMax('');
+      clearCategoryFilter();
       return;
     }
-    setPriceMax(String(priceBounds.max));
-  }, [products, priceBounds.max, activeSubcategory]);
+    setCategoryFilter(priceBounds, String(priceBounds.max));
+  }, [products, priceBounds, activeSubcategory, setCategoryFilter, clearCategoryFilter]);
+
+  useEffect(() => () => clearCategoryFilter(), [clearCategoryFilter]);
 
   const filteredProducts = useMemo(() => {
     if (!products.length) return [];
@@ -167,7 +116,6 @@ function CategoryPage() {
   }, [products, priceBounds.min, priceMax]);
 
   const handleSubcategoryClick = (subcategory) => {
-    setFilterOpen(false);
     if (!subcategory) {
       setSearchParams({});
       return;
@@ -175,24 +123,6 @@ function CategoryPage() {
 
     setSearchParams({ subcategory });
   };
-
-  useEffect(() => {
-    if (!filterOpen) return undefined;
-
-    const handlePointerDown = (event) => {
-      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
-        setFilterOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('touchstart', handlePointerDown);
-
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('touchstart', handlePointerDown);
-    };
-  }, [filterOpen]);
 
   const showFilterBar = hasSubcategories || products.length > 0;
 
@@ -218,38 +148,13 @@ function CategoryPage() {
   return (
     <div className="mx-auto max-w-[1600px] px-4 pb-16 sm:px-6 md:px-8">
       {showFilterBar && (
-        <div className="sticky-subcategory-bar -mx-4 border-b border-black/5 bg-white px-4 py-3 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8">
+        <div
+          className={`sticky-subcategory-bar -mx-4 border-b border-black/5 bg-white px-4 py-3 sm:-mx-6 sm:px-6 md:-mx-8 md:px-8 ${
+            !hasSubcategories ? 'hidden md:block' : ''
+          }`}
+        >
           <div className="flex items-center gap-2 md:gap-4">
-            {products.length > 0 && (
-              <div ref={filterMenuRef} className="relative shrink-0 md:hidden">
-                <button
-                  type="button"
-                  onClick={() => setFilterOpen((open) => !open)}
-                  className={`flex h-10 w-10 items-center justify-center rounded-full border transition ${
-                    filterOpen
-                      ? 'border-primary bg-primary text-white'
-                      : 'border-black/15 text-primary hover:bg-primary/5'
-                  }`}
-                  aria-label="Open price filter"
-                  aria-expanded={filterOpen}
-                >
-                  <FilterDotsIcon />
-                </button>
-                {filterOpen && (
-                  <div className="absolute left-0 top-full z-[60] mt-2 w-[min(100vw-2rem,280px)] rounded-xl border border-black/10 bg-white p-4 shadow-lg">
-                    <p className="mb-3 text-sm font-semibold text-black">Price filter</p>
-                    <PriceFilterControls
-                      priceBounds={priceBounds}
-                      priceMax={priceMax}
-                      setPriceMax={setPriceMax}
-                      onDone={() => setFilterOpen(false)}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {hasSubcategories ? (
+            {hasSubcategories && (
               <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <button
                   type="button"
@@ -277,8 +182,6 @@ function CategoryPage() {
                   </button>
                 ))}
               </div>
-            ) : (
-              <div className="min-w-0 flex-1 md:hidden" />
             )}
 
             {products.length > 0 && (
@@ -303,7 +206,7 @@ function CategoryPage() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => setPriceMax(String(priceBounds.max))}
+                  onClick={resetPriceMax}
                   className="shrink-0 rounded-full border border-primary/30 px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary/5"
                 >
                   Reset

@@ -4,6 +4,7 @@ import AdminRoute from './components/AdminRoute';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { CategoryFilterProvider } from './context/CategoryFilterContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -40,8 +41,9 @@ function App() {
     <AuthProvider>
       <CartProvider>
         <WishlistProvider>
-          <ScrollToTop />
-          <Routes>
+          <CategoryFilterProvider>
+            <ScrollToTop />
+            <Routes>
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route
               path="/admin"
@@ -108,7 +110,8 @@ function App() {
               <Route path="terms-and-conditions" element={<TermsAndConditions />} />
               <Route path="shipping-and-returns" element={<ShippingReturns />} />
             </Route>
-          </Routes>
+            </Routes>
+          </CategoryFilterProvider>
         </WishlistProvider>
       </CartProvider>
     </AuthProvider>
