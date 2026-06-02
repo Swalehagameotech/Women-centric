@@ -18,6 +18,14 @@ In your Render **Static Site** → **Settings**:
 
 After saving, click **Manual Deploy** → **Clear build cache & deploy**.
 
+### Redirects/Rewrites (required for routes like `/admin`)
+
+In Render Static Site settings, add:
+
+| Type | Source | Destination |
+|------|--------|-------------|
+| Rewrite | `/*` | `/index.html` |
+
 ---
 
 ## If Root Directory is empty (repo root)
