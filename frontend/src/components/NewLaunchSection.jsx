@@ -4,6 +4,7 @@ import ProductCard from './ProductCard';
 import ProductsEmptyState from './ProductsEmptyState';
 import ProductsLoader from './ProductsLoader';
 import { NEW_LAUNCH_BADGE_IMAGE } from '../utils/badges';
+import { SectionTitle } from './PageEmptyState';
 import { fetchMixedHomeProducts } from '../utils/products';
 
 const NEW_LAUNCH_MIX = [
@@ -63,7 +64,7 @@ function NewLaunchSection() {
   return (
     <section className="mx-auto w-full max-w-[1600px] px-4 sm:px-6 md:px-8">
       <div className="mb-6 flex justify-center text-center sm:mb-8">
-        <h2 className="font-serif text-2xl font-medium text-black sm:text-3xl md:text-4xl">New Launch</h2>
+        <SectionTitle>New Launch</SectionTitle>
       </div>
 
       {loading ? (

@@ -1,3 +1,4 @@
+import { SectionTitle } from './PageEmptyState';
 import ProductCard from './ProductCard';
 import ProductsEmptyState, { NO_PRODUCTS_MESSAGE } from './ProductsEmptyState';
 import ProductsLoader from './ProductsLoader';
@@ -10,7 +11,9 @@ function ProductRecommendationsRow({
 }) {
   return (
     <section className="mb-10 last:mb-0 sm:mb-12">
-      <h2 className="font-serif text-2xl font-medium text-black sm:text-3xl">{title}</h2>
+      <SectionTitle align="left" size="md">
+        {title}
+      </SectionTitle>
 
       {loading ? (
         <ProductsLoader className="sm:mt-2" variant="inline" label="Loading products…" />

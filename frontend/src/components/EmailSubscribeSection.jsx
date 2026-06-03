@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { SectionTitle } from './PageEmptyState';
 
 function EmailSubscribeSection() {
   const [email, setEmail] = useState('');
@@ -20,9 +20,9 @@ function EmailSubscribeSection() {
     <section className="mt-12 sm:mt-14">
       <div className="mx-auto max-w-xl rounded-2xl border border-primary/15 bg-[#f7f3ef] px-6 py-10 text-center sm:px-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Stay in the loop</p>
-        <h2 className="mt-3 font-serif text-2xl font-medium text-black sm:text-3xl">
+        <SectionTitle size="md" className="mt-3">
           Subscribe to our emails
-        </h2>
+        </SectionTitle>
         <p className="mt-3 text-sm leading-relaxed text-black/70">
           Send us your email and we&apos;ll send you our latest offers, new arrivals, and style picks.
         </p>

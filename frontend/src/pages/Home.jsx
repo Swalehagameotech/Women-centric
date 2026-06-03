@@ -5,6 +5,7 @@ import BestsellerCategoriesSection from '../components/BestsellerCategoriesSecti
 import DiscountDealsSection from '../components/DiscountDealsSection';
 import ExploreEleganceSection from '../components/ExploreEleganceSection';
 import NewLaunchSection from '../components/NewLaunchSection';
+import { SectionTitle } from '../components/PageEmptyState';
 
 const heroPromoMessage = '50% off on Luxury Bags grab the opportunity';
 const heroPromoVideo =
@@ -207,18 +208,16 @@ function Home() {
           <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
             <div className="lg:pr-4">
               <div className="hidden items-center gap-5 lg:flex">
-                <h2 className="font-serif text-5xl leading-[0.95] text-black xl:text-6xl">
+                <SectionTitle align="left" size="xl" className="hidden lg:block">
                   Why Women
                   <br />
                   Choose Style By Her
-                </h2>
+                </SectionTitle>
                 <span className="h-px flex-1 bg-primary/30" />
               </div>
 
               <div className="lg:hidden">
-                <h2 className="font-serif text-3xl text-black sm:text-4xl">
-                  Why Women Choose Style By Her
-                </h2>
+                <SectionTitle align="left">Why Women Choose Style By Her</SectionTitle>
               </div>
 
               <p className="mt-5 max-w-xl text-base leading-relaxed text-black/70">

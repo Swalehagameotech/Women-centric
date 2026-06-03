@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import ProductsEmptyState from './ProductsEmptyState';
 import ProductsLoader from './ProductsLoader';
+import { SectionTitle } from './PageEmptyState';
 import { applyFixedDiscountPercent, DISCOUNT_PROMO_PERCENT, fetchProducts } from '../utils/products';
 
 const discountBannerDesktop =
@@ -62,6 +63,9 @@ function DiscountDealsSection() {
       </Link>
 
       <div className="mx-auto mt-4 max-w-[1600px] px-4 sm:mt-8 sm:px-6 md:px-8">
+        <div className="mb-4 text-center sm:mb-6">
+          <SectionTitle>Discount Deals</SectionTitle>
+        </div>
         {loading ? (
           <ProductsLoader variant="section" label="Loading deals…" />
         ) : homeProducts.length === 0 ? (

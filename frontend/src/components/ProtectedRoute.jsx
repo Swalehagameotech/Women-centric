@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PageTitle } from './PageEmptyState';
 
 function ProtectedRoute({ children }) {
   const { loggedIn, openAuth } = useAuth();
@@ -11,7 +12,9 @@ function ProtectedRoute({ children }) {
   return (
     <div className="mx-auto max-w-lg px-4 py-20 text-center sm:px-6">
       <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Account</p>
-      <h1 className="mt-4 font-serif text-3xl text-black">Sign in required</h1>
+      <PageTitle align="center" className="mt-4">
+        Sign in required
+      </PageTitle>
       <p className="mt-3 text-sm text-black/70">
         Please sign in to view this page and manage your account.
       </p>

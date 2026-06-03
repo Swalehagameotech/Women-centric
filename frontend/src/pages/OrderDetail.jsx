@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { PageTitle } from '../components/PageEmptyState';
 import { authFetch } from '../utils/api';
 import { formatAddressDisplay } from '../utils/address';
 import { formatPrice } from '../utils/products';
@@ -191,7 +192,7 @@ function OrderDetail() {
             ← My Orders
           </button>
           <div className="text-left sm:text-right">
-            <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl">Order Details</h1>
+            <PageTitle size="md">Order Details</PageTitle>
             <p className="mt-0.5 text-sm text-gray-600">#{order.orderNumber}</p>
           </div>
         </div>

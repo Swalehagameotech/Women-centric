@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SectionTitle } from './PageEmptyState';
 
 const eleganceSlides = [
   {
@@ -147,7 +148,7 @@ function ExploreEleganceSection() {
   return (
     <section className="mx-auto w-full max-w-[1600px] overflow-x-hidden px-4 sm:px-6 md:px-8">
       <div className="mb-6 ">
-        <h2 className="font-serif text-3xl text-center font-medium text-black sm:text-4xl">Explore Elegance</h2>
+        <SectionTitle>Explore Elegance</SectionTitle>
       </div>
 
       <div className="overflow-x-auto pb-2 scrollbar-hide">

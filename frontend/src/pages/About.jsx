@@ -1,4 +1,4 @@
-import { PageTitle } from '../components/PageEmptyState';
+import { PageTitle, SectionTitle } from '../components/PageEmptyState';
 
 const values = [
   {
@@ -34,7 +34,9 @@ function About() {
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-2">
           <div className="rounded-2xl border border-primary/15 bg-white p-8 shadow-sm">
-            <h2 className="font-serif text-2xl text-black">Our story</h2>
+            <SectionTitle align="left" size="md">
+              Our story
+            </SectionTitle>
             <p className="mt-4 text-sm leading-relaxed text-black/70">
               What started as a small boutique idea has grown into a trusted destination for women
               seeking fashion, beauty, and lifestyle essentials. We partner with ethical makers and
@@ -48,7 +50,9 @@ function About() {
           </div>
 
           <div className="rounded-2xl border border-primary/15 bg-white p-8 shadow-sm">
-            <h2 className="font-serif text-2xl text-black">Our mission</h2>
+            <SectionTitle align="left" size="md">
+              Our mission
+            </SectionTitle>
             <p className="mt-4 text-sm leading-relaxed text-black/70">
               To create a shopping experience where women feel understood, respected, and delighted —
               from the first browse to the moment your package arrives at your door.
@@ -73,7 +77,7 @@ function About() {
 
       <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-          <h2 className="text-center font-serif text-3xl text-black">What we stand for</h2>
+          <SectionTitle align="center">What we stand for</SectionTitle>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {values.map((item) => (
               <article

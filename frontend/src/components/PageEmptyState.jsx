@@ -9,14 +9,39 @@ export const SITE_EXPLORE_LINKS = [
   { to: '/shipping-and-returns', label: 'Shipping & Returns' },
 ];
 
-export function PageTitle({ children, align = 'left', className = '' }) {
-  const alignClass =
-    align === 'center' ? 'text-center' : align === 'right' ? 'text-right' : 'text-left';
+export const SECTION_TITLE_BASE = 'font-serif font-bold text-[#5e303e]';
 
+const sectionTitleSizeClass = {
+  lg: 'text-3xl sm:text-4xl',
+  md: 'text-2xl sm:text-3xl',
+  xl: 'text-3xl sm:text-4xl lg:text-5xl xl:text-6xl lg:leading-[0.95]',
+};
+
+function sectionTitleAlignClass(align) {
+  if (align === 'center') return 'text-center';
+  if (align === 'right') return 'text-right';
+  return 'text-left';
+}
+
+export function sectionTitleClasses({ align = 'left', size = 'lg', className = '' } = {}) {
+  return `${SECTION_TITLE_BASE} ${sectionTitleSizeClass[size] || sectionTitleSizeClass.lg} ${sectionTitleAlignClass(align)} ${className}`.trim();
+}
+
+export function PageTitle({ children, align = 'left', size = 'lg', className = '' }) {
   return (
-    <h1 className={`font-serif text-3xl font-medium text-black sm:text-4xl ${alignClass} ${className}`}>
-      {children}
-    </h1>
+    <h1 className={sectionTitleClasses({ align, size, className })}>{children}</h1>
+  );
+}
+
+export function SectionTitle({
+  children,
+  align = 'center',
+  size = 'lg',
+  className = '',
+  as: Tag = 'h2',
+}) {
+  return (
+    <Tag className={sectionTitleClasses({ align, size, className })}>{children}</Tag>
   );
 }
 

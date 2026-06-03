@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProductsEmptyState from './ProductsEmptyState';
 import ProductsLoader from './ProductsLoader';
+import { SectionTitle } from './PageEmptyState';
 import { fetchMixedHomeProducts, formatPrice } from '../utils/products';
 
 const BESTSELLER_MIX = [
@@ -218,7 +219,7 @@ function BestsellerCategoriesSection() {
   return (
     <section className="w-full px-3 sm:px-4 md:px-5 lg:px-6">
       <div className="text-center">
-        <h2 className="font-serif text-3xl font-medium text-black sm:text-4xl">Bestseller</h2>
+        <SectionTitle>Bestseller</SectionTitle>
       </div>
 
       {loading ? (
