@@ -4,7 +4,10 @@ import bcrypt from 'bcryptjs';
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find()
+    const users = await User.find({
+      role: { $ne: 'admin' },
+      _id: { $ne: req.user._id },
+    })
       .select('name email phone role createdAt updatedAt')
       .sort({ createdAt: -1 });
 

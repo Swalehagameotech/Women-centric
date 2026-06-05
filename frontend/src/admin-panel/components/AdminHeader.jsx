@@ -12,7 +12,7 @@ function AdminHeader({ title }) {
 
   return (
     <header className="flex shrink-0 items-center justify-between border-b border-primary/10 bg-white px-4 py-4 shadow-sm sm:px-6 lg:px-8">
-      <h1 className="font-serif text-xl font-medium text-[#1f1419] sm:text-2xl">{title}</h1>
+      <h1 className="text-xl font-semibold text-[#1f1419] sm:text-2xl">{title}</h1>
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
           to="/"

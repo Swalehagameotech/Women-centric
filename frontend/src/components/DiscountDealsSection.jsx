@@ -12,7 +12,7 @@ const discountBannerDesktop =
 const discountBannerMobile =
   'https://res.cloudinary.com/dsafvwkrf/image/upload/v1780051133/ChatGPT_Image_May_29_2026_04_01_00_PM_ys1db7.png';
 
-const HOME_LIMIT = 8;
+const HOME_LIMIT = 16;
 
 function DiscountDealsSection() {
   const [products, setProducts] = useState([]);
@@ -63,9 +63,7 @@ function DiscountDealsSection() {
       </Link>
 
       <div className="mx-auto mt-4 max-w-[1600px] px-4 sm:mt-8 sm:px-6 md:px-8">
-        <div className="mb-4 text-center sm:mb-6">
-          <SectionTitle>Discount Deals</SectionTitle>
-        </div>
+       
         {loading ? (
           <ProductsLoader variant="section" label="Loading deals…" />
         ) : homeProducts.length === 0 ? (

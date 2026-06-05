@@ -59,7 +59,7 @@ function AdminLogin() {
     <div className="min-h-screen bg-[#f3eef1] px-4 py-10 sm:px-6">
       <div className="mx-auto w-full max-w-md rounded-2xl border border-primary/10 bg-white p-6 shadow-sm sm:p-7">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Admin Panel</p>
-        <h1 className="mt-2 font-serif text-3xl text-[#1f1419]">Admin Login</h1>
+        <h1 className="mt-2 text-3xl font-semibold text-[#1f1419]">Admin Login</h1>
         <p className="mt-2 text-sm text-black/65">Sign in with an admin account to continue.</p>
 
         {(denyMessage || error) && (

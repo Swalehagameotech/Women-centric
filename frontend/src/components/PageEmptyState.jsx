@@ -9,7 +9,7 @@ export const SITE_EXPLORE_LINKS = [
   { to: '/shipping-and-returns', label: 'Shipping & Returns' },
 ];
 
-export const SECTION_TITLE_BASE = 'font-serif font-bold text-[#5e303e]';
+export const SECTION_TITLE_BASE = 'font-bold text-[#5e303e]';
 
 const sectionTitleSizeClass = {
   lg: 'text-3xl sm:text-4xl',

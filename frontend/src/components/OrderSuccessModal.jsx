@@ -31,7 +31,7 @@ function OrderSuccessModal({ order, onViewOrders, onGoHome }) {
           <CheckIcon />
         </div>
 
-        <h2 id="order-success-title" className="mt-5 font-serif text-2xl text-black sm:text-3xl">
+        <h2 id="order-success-title" className="mt-5 text-2xl font-semibold text-black sm:text-3xl">
           Order placed successfully!
         </h2>
 

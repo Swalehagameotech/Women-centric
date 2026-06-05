@@ -185,7 +185,7 @@ function AuthModal({ isOpen, onClose, onSuccess, initialMode = 'login' }) {
         {mode === 'login' && (
           <div className="text-center pr-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Welcome back</p>
-            <h2 id="auth-modal-title" className="mt-2 font-serif text-2xl text-black sm:text-3xl">
+            <h2 id="auth-modal-title" className="mt-2 text-2xl font-semibold text-black sm:text-3xl">
               Sign in
             </h2>
             <p className="mt-1 text-sm text-black/70">Access your Style By Her account</p>

@@ -21,8 +21,8 @@ const TEXT_TILES = {
       <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-black/50 sm:text-[10px]">
         Handpicked
       </p>
-      <p className="mt-1 font-serif text-lg leading-snug text-black sm:text-xl">For every</p>
-      <p className="font-serif text-base text-primary sm:text-lg">occasion</p>
+      <p className="mt-1 text-lg leading-snug text-black sm:text-xl">For every</p>
+      <p className="text-base text-primary sm:text-lg">occasion</p>
     </>
   ),
   about: (
@@ -30,7 +30,7 @@ const TEXT_TILES = {
       <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-black/45 sm:text-[10px]">
         Bestseller
       </p>
-      <p className="mt-1 font-serif text-base leading-snug text-black sm:text-lg">Most loved picks</p>
+      <p className="mt-1 text-base leading-snug text-black sm:text-lg">Most loved picks</p>
       <p className="mt-2 text-[10px] leading-relaxed text-black/55 sm:text-xs">
         Bags, eyewear &amp; luxury accessories — our customers&apos; favourites.
       </p>
@@ -38,14 +38,14 @@ const TEXT_TILES = {
   ),
   curated: (
     <>
-      <p className="font-serif text-base leading-snug text-black sm:text-lg">Accessories</p>
+      <p className="text-base leading-snug text-black sm:text-lg">Accessories</p>
       <p className="mt-1 text-[10px] text-black/55 sm:text-xs">Editor&apos;s choice</p>
     </>
   ),
   shop: (
     <>
       <p className="text-[9px] uppercase tracking-[0.15em] text-black/45">Style By Her</p>
-      <p className="mt-1 font-serif text-base text-black sm:text-lg">Shop bestsellers</p>
+      <p className="mt-1 text-base text-black sm:text-lg">Shop bestsellers</p>
       <Link
         to="/category/bestseller"
         className="mt-2 inline-block text-[10px] font-medium text-primary underline-offset-2 hover:underline sm:text-xs"
@@ -57,7 +57,7 @@ const TEXT_TILES = {
   spotlight: (
     <>
       <p className="text-[9px] font-medium uppercase tracking-[0.15em] text-black/45">Quality</p>
-      <p className="mt-1 font-serif text-sm leading-snug text-black sm:text-base">Made for you</p>
+      <p className="mt-1 text-sm leading-snug text-black sm:text-base">Made for you</p>
       <p className="mt-1 text-[9px] leading-relaxed text-black/55 sm:text-[10px]">
         Timeless pieces, lasting style
       </p>

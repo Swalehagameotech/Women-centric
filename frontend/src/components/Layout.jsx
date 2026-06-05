@@ -89,7 +89,7 @@ function Layout() {
   }, [isHomePage, hasCategoryNav]);
 
   return (
-    <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white font-sans text-black">
+    <div className="flex min-h-screen w-full max-w-full flex-col overflow-x-clip bg-white text-black">
       <Navbar categories={allCategories} />
 
       {/* Desktop / tablet: top category strip */}

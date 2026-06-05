@@ -258,7 +258,7 @@ function Home() {
 
           <div className="absolute inset-0 flex items-center justify-center px-6 text-center sm:px-12">
             <div>
-              <h2 className="font-serif text-2xl text-white sm:text-3xl">Ready to refresh your wardrobe?</h2>
+              <h2 className="text-2xl font-semibold text-white sm:text-3xl">Ready to refresh your wardrobe?</h2>
               <p className="mx-auto mt-3 max-w-lg text-white/90">
                 Join thousands of women who shop with confidence. Have questions? Our team is here to
                 help.
