@@ -183,16 +183,19 @@ function OrderDetail() {
     <div className="min-h-[50vh] bg-stone-50/60 pb-16 pt-6 sm:pt-8">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Top bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="relative flex items-center justify-center py-1">
           <button
             type="button"
             onClick={() => navigate('/orders')}
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm transition hover:bg-gray-50"
+            className="absolute left-0 flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white text-lg text-gray-800 shadow-sm transition hover:bg-gray-50"
+            aria-label="Back to orders"
           >
-            ← My Orders
+            ←
           </button>
-          <div className="text-left sm:text-right">
-            <PageTitle size="md">Order Details</PageTitle>
+          <div className="px-12 text-center">
+            <PageTitle align="center" size="md">
+              Order Details
+            </PageTitle>
             <p className="mt-0.5 text-sm text-gray-600">#{order.orderNumber}</p>
           </div>
         </div>
@@ -227,8 +230,9 @@ function OrderDetail() {
         </SectionCard>
 
         {/* Progress stepper */}
-        <SectionCard className="mt-4 overflow-x-auto">
-          <div className="flex min-w-[520px] items-start px-1 sm:min-w-0">
+        <SectionCard className="mt-4">
+          {/* Mobile: vertical list */}
+          <div className="space-y-3 sm:hidden">
             {ORDER_PROGRESS_STEPS.map((step, index) => {
               const state = getOrderProgressStepState(order.status, step.key);
               const showPlacedTime =
@@ -239,17 +243,81 @@ function OrderDetail() {
               const showCurrentStepTime =
                 isCurrentStep && ['processing', 'shipped', 'delivered', 'cancelled'].includes(step.key);
               const timestamp = showPlacedTime ? placedAt : showCurrentStepTime ? latestStatusAt : null;
+              const isDone = state === 'completed' || state === 'active';
+              const isLast = index === ORDER_PROGRESS_STEPS.length - 1;
 
               return (
-                <ProgressStep
-                  key={step.key}
-                  step={step}
-                  index={index}
-                  state={state}
-                  timestamp={timestamp}
-                />
+                <div key={step.key} className="flex items-stretch gap-3">
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                        state === 'active' && step.key === 'cancelled'
+                          ? 'bg-red-500 text-white'
+                          : isDone
+                            ? 'bg-primary text-white'
+                            : 'border-2 border-gray-300 bg-white text-gray-500'
+                      }`}
+                    >
+                      {isDone ? (
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.2}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        index + 1
+                      )}
+                    </div>
+                    {!isLast && (
+                      <div className="mt-1 mb-[-4px] h-6 w-px bg-gray-200" aria-hidden />
+                    )}
+                  </div>
+                  <div className="min-w-0 py-0.5">
+                    <p
+                      className={`text-sm font-medium ${
+                        isDone ? 'text-gray-900' : 'text-gray-500'
+                      }`}
+                    >
+                      {step.label}
+                    </p>
+                    {timestamp && (
+                      <p className="mt-0.5 text-xs text-gray-500">{timestamp}</p>
+                    )}
+                  </div>
+                </div>
               );
             })}
+          </div>
+
+          {/* Desktop: horizontal timeline */}
+          <div className="hidden overflow-x-auto sm:block">
+            <div className="flex min-w-[520px] items-start px-1">
+              {ORDER_PROGRESS_STEPS.map((step, index) => {
+                const state = getOrderProgressStepState(order.status, step.key);
+                const showPlacedTime =
+                  step.key === 'placed' &&
+                  (state === 'active' || state === 'completed') &&
+                  normalizedStatus !== 'cancelled';
+                const isCurrentStep = step.key === normalizedStatus;
+                const showCurrentStepTime =
+                  isCurrentStep && ['processing', 'shipped', 'delivered', 'cancelled'].includes(step.key);
+                const timestamp = showPlacedTime ? placedAt : showCurrentStepTime ? latestStatusAt : null;
+
+                return (
+                  <ProgressStep
+                    key={step.key}
+                    step={step}
+                    index={index}
+                    state={state}
+                    timestamp={timestamp}
+                  />
+                );
+              })}
+            </div>
           </div>
         </SectionCard>
 

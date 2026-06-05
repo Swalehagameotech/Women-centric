@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { SectionTitle } from './PageEmptyState';
 
 function EmailSubscribeSection() {

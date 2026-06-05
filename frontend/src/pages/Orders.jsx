@@ -1,14 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import PageEmptyState, { PageTitle } from '../components/PageEmptyState';
 import { authFetch } from '../utils/api';
 import { formatPrice } from '../utils/products';
 import {
-  canUserCancelOrder,
   getOrderStatusLabel,
-  getPaymentStatusLabel,
   orderStatusBadgeClass,
-  paymentStatusBadgeClass,
 } from '../utils/orders';
 
 function formatOrderDate(value) {
@@ -20,12 +17,9 @@ function formatOrderDate(value) {
 }
 
 function Orders() {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [cancellingId, setCancellingId] = useState(null);
-  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -51,26 +45,6 @@ function Orders() {
     return () => controller.abort();
   }, []);
 
-  const handleCancel = async (orderId) => {
-    if (!window.confirm('Cancel this order?')) return;
-
-    setCancellingId(orderId);
-    setActionError('');
-
-    try {
-      const result = await authFetch(`/api/orders/${orderId}/cancel`, {
-        method: 'PATCH',
-      });
-      setOrders((prev) =>
-        prev.map((o) => (o._id === orderId ? result.data : o)),
-      );
-    } catch (err) {
-      setActionError(err.message);
-    } finally {
-      setCancellingId(null);
-    }
-  };
-
   if (loading) {
     return (
       <div className="page-shell mx-auto max-w-4xl text-center text-black/70">
@@ -92,10 +66,6 @@ function Orders() {
       <div className="page-shell mx-auto max-w-4xl">
         <PageTitle align="center">Orders</PageTitle>
 
-        {actionError && (
-          <p className="mt-6 text-center text-sm text-red-600">{actionError}</p>
-        )}
-
         {orders.length === 0 ? (
           <PageEmptyState
             message="You don't have any orders yet."
@@ -109,39 +79,39 @@ function Orders() {
           <ul className="mt-10 space-y-6">
             {orders.map((order) => {
               const firstItem = order.items[0];
-              const cancellable = canUserCancelOrder(order.status);
 
               return (
                 <li key={order._id}>
-                  <article className="overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm sm:px-5">
-                    {/* Header: order id | date + price + badges */}
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="text-sm font-bold tracking-tight text-gray-900 sm:text-base">
+                  <Link
+                    to={`/orders/${order._id}`}
+                    className="block overflow-hidden rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm transition hover:border-gray-300 hover:shadow-md sm:px-5"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="shrink-0 text-xs font-bold tracking-tight text-gray-900 sm:text-base">
                         #{order.orderNumber}
                       </p>
-                      <div className="min-w-0 text-right">
-                        <p className="text-xs text-gray-500">
+
+                      <div className="flex min-w-0 flex-nowrap items-center justify-end gap-x-2 gap-y-1 text-xs text-gray-600 sm:flex-wrap sm:text-sm">
+                        <span className="hidden whitespace-nowrap sm:inline">
                           {formatOrderDate(order.createdAt)}
-                        </p>
-                        <div className="mt-1 flex flex-wrap items-center justify-end gap-1.5">
-                          <p className="text-base font-bold text-gray-900 sm:text-lg">
-                            {formatPrice(order.total)}
-                          </p>
-                          <span
-                            className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold sm:text-xs ${orderStatusBadgeClass(order.status)}`}
-                          >
-                            {getOrderStatusLabel(order.status)}
-                          </span>
-                          <span
-                            className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold sm:text-xs ${paymentStatusBadgeClass(order.paymentStatus)}`}
-                          >
-                            {getPaymentStatusLabel(order.paymentStatus)}
-                          </span>
-                        </div>
+                        </span>
+                        <span className="hidden text-gray-300 sm:inline" aria-hidden>
+                          ·
+                        </span>
+                        <span className="whitespace-nowrap font-bold text-gray-900">
+                          {formatPrice(order.total)}
+                        </span>
+                        <span className="text-gray-300" aria-hidden>
+                          ·
+                        </span>
+                        <span
+                          className={`inline-flex shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold sm:text-xs ${orderStatusBadgeClass(order.status)}`}
+                        >
+                          {getOrderStatusLabel(order.status)}
+                        </span>
                       </div>
                     </div>
 
-                    {/* Product preview */}
                     {firstItem && (
                       <div className="mt-2.5 flex items-center gap-3">
                         <div className="h-14 w-14 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-gray-50 sm:h-16 sm:w-16">
@@ -158,9 +128,7 @@ function Orders() {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-gray-900">
-                            {firstItem.name}
-                          </p>
+                          <p className="text-sm font-semibold text-gray-900">{firstItem.name}</p>
                           <p className="mt-0.5 text-xs text-gray-500">
                             Qty: {firstItem.quantity}
                             {order.items.length > 1 &&
@@ -169,28 +137,7 @@ function Orders() {
                         </div>
                       </div>
                     )}
-
-                    {/* Actions — bottom right */}
-                    <div className="mt-2.5 flex flex-wrap items-center justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/orders/${order._id}`)}
-                        className="rounded-lg border border-gray-300 bg-white px-4 py-1.5 text-sm font-medium text-gray-900 transition hover:border-gray-400 hover:bg-gray-50"
-                      >
-                        View Details
-                      </button>
-                      {cancellable && (
-                        <button
-                          type="button"
-                          onClick={() => handleCancel(order._id)}
-                          disabled={cancellingId === order._id}
-                          className="rounded-lg border border-red-400 bg-white px-4 py-1.5 text-sm font-medium text-red-600 transition hover:border-red-500 hover:bg-red-50 disabled:opacity-50"
-                        >
-                          {cancellingId === order._id ? 'Cancelling…' : 'Cancel Order'}
-                        </button>
-                      )}
-                    </div>
-                  </article>
+                  </Link>
                 </li>
               );
             })}
